@@ -26,6 +26,7 @@ import { Stepper } from "../stepper";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { findPostcode } from "malaysia-postcodes";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const userRegisterFormStepTwoSchema = z.object({
   address_1: z.string().min(1, { message: "Address 1 is required" }),
@@ -66,6 +67,8 @@ export function RegisterStepTwoForm() {
       form.setValue("state", result.state!);
       setCity(result.city!);
       setState(result.state!);
+    } else {
+      toast.error("Postcode not found");
     }
   }
 
@@ -114,6 +117,48 @@ export function RegisterStepTwoForm() {
                   </FormItem>
                 )}
               />
+
+              {city ? (
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Selangor"
+                          {...field}
+                          value={city}
+                          disabled
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
+
+              {state ? (
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Selangor"
+                          {...field}
+                          value={state}
+                          disabled
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
 
               <FormField
                 control={form.control}

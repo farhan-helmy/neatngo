@@ -30,7 +30,7 @@ export default function RegisterLayout({
   return (
     <>
       <Header />
-      <body>{children}</body>
+      <body suppressHydrationWarning={true}>{children}</body>
     </>
   );
 }
