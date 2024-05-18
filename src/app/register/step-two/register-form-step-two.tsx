@@ -83,11 +83,7 @@ export function RegisterStepTwoForm() {
         <Stepper step="two" />
       </div>
       <Card>
-        <CardHeader>
-          <CardTitle>Register</CardTitle>
-          <CardDescription>Register as member for our society</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="py-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {/* Repeat this FormField block for each field in your form */}

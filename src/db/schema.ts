@@ -16,6 +16,7 @@ export const users = pgTable('users', {
     postcode: text('postcode'),
     occupation: text('occupation'),
     nameOfDisorder: text('name_of_disorder'),
+    // MONTHLY, ANNUAL, LIFETIME
     membershipType: text('membership_type'),
     isPaid: boolean('is_paid').default(false),
     membershipStart: date('membership_start_date'),

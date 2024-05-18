@@ -39,6 +39,9 @@ import { Stepper } from "../stepper";
 import { cn } from "@/lib/utils";
 import { CommandList } from "cmdk";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState } from "react";
+import { CheckIcon } from "@radix-ui/react-icons";
 
 const diseases = [
   { label: "Cystic Fibrosis", value: "Cystic Fibrosis" },
@@ -104,13 +107,18 @@ const userRegisterFormStepFourSchema = z.object({
   nameOfDisorder: z
     .string()
     .min(1, { message: "Name of disorder is required" }),
+  membershipType: z.enum(["MONTHLY", "ANNUAL", "LIFETIME"], {
+    required_error: "You need to select membership type.",
+  }),
 });
 
 export function RegisterStepFourForm() {
+  const [memberType, setMemberType] = useState("MONTHLY");
   const form = useForm<z.infer<typeof userRegisterFormStepFourSchema>>({
     resolver: zodResolver(userRegisterFormStepFourSchema),
     defaultValues: {
       nameOfDisorder: "",
+      membershipType: "MONTHLY",
     },
   });
 
@@ -158,40 +166,117 @@ export function RegisterStepFourForm() {
                         <Command>
                           <CommandInput placeholder="Search for disorder..." />
                           <ScrollArea className="h-96">
-                            
-
-                          <CommandEmpty>No disorder found.</CommandEmpty>
-                          <CommandGroup>
-                            <CommandList>
-                              {diseases.map((disease) => (
-                                <CommandItem
-                                  value={disease.label}
-                                  key={disease.value}
-                                  onSelect={() => {
-                                    form.setValue(
-                                      "nameOfDisorder",
-                                      disease.value
-                                    );
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      disease.value === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {disease.label}
-                                </CommandItem>
-                              ))}
-                            </CommandList>
-                          </CommandGroup>
+                            <CommandEmpty>No disorder found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandList>
+                                {diseases.map((disease) => (
+                                  <CommandItem
+                                    value={disease.label}
+                                    key={disease.value}
+                                    onSelect={() => {
+                                      form.setValue(
+                                        "nameOfDisorder",
+                                        disease.value
+                                      );
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        disease.value === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {disease.label}
+                                  </CommandItem>
+                                ))}
+                              </CommandList>
+                            </CommandGroup>
                           </ScrollArea>
                         </Command>
                       </PopoverContent>
                     </Popover>
                     <FormDescription>Select your disease</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="membershipType"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Select membership type</FormLabel>
+                    <FormControl>
+                      <FormItem>
+                        <Card
+                          className={`${
+                            memberType === "MONTHLY" ? "outline" : ""
+                          } hover:cursor-pointer`}
+                          onClick={() => {
+                            setMemberType("MONTHLY");
+                            form.setValue("membershipType", "MONTHLY");
+                          }}
+                        >
+                          <CardHeader>
+                            <CardTitle>Monthly</CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex flex-row justify-between items-center">
+                            <div className="font-semibold text-sm">RM 30</div>
+                            {memberType === "MONTHLY" && (
+                              <CheckIcon className="rounded-full bg-black text-white h-8 w-8" />
+                            )}
+                          </CardContent>
+                        </Card>
+                      </FormItem>
+                    </FormControl>
+                    <FormControl>
+                      <FormItem>
+                        <Card
+                          className={`${
+                            memberType === "ANNUAL" ? "outline" : ""
+                          } hover:cursor-pointer`}
+                          onClick={() => {
+                            setMemberType("ANNUAL");
+                            form.setValue("membershipType", "ANNUAL");
+                          }}
+                        >
+                          <CardHeader>
+                            <CardTitle>Annual</CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex flex-row justify-between items-center">
+                            <div className="font-semibold text-sm">RM 360</div>
+                            {memberType === "ANNUAL" && (
+                              <CheckIcon className="rounded-full bg-black text-white h-8 w-8" />
+                            )}
+                          </CardContent>
+                        </Card>
+                      </FormItem>
+                    </FormControl>
+                    <FormControl>
+                      <FormItem>
+                        <Card
+                          className={`${
+                            memberType === "LIFETIME" ? "outline" : ""
+                          } hover:cursor-pointer`}
+                          onClick={() => {
+                            setMemberType("LIFETIME");
+                            form.setValue("membershipType", "LIFETIME");
+                          }}
+                        >
+                          <CardHeader>
+                            <CardTitle>Lifetime</CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex flex-row justify-between items-center">
+                            <div className="font-semibold text-sm">RM 999</div>
+                            {memberType === "LIFETIME" && (
+                              <CheckIcon className="rounded-full bg-black text-white h-8 w-8" />
+                            )}
+                          </CardContent>
+                        </Card>
+                      </FormItem>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

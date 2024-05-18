@@ -9,7 +9,7 @@ export function Stepper({ step }: { step: "one" | "two" | "three" | "four" }) {
       </div>
       <div
         className={`w-10 h-10 rounded-full p-1 z-10 ${
-          step !== "two" ? "bg-white border-pink-500 border-2" : "bg-pink-500"
+          step !== "two" && step !== "three" ? "bg-white border-pink-500 border-2" : "bg-pink-500"
         }`}
       >
         <HomeIcon
@@ -18,7 +18,7 @@ export function Stepper({ step }: { step: "one" | "two" | "three" | "four" }) {
       </div>
       <div
         className={`w-10 h-10 rounded-full p-1 z-10 ${
-          step !== "two" && step !== "three" ? "bg-white border-pink-500 border-2 " : ""
+         step !== "three" ? "bg-white border-pink-500 border-2 " : "bg-pink-500"
         }`}
       >
         <BackpackIcon
@@ -27,7 +27,7 @@ export function Stepper({ step }: { step: "one" | "two" | "three" | "four" }) {
       </div>
       <div
         className={`w-10 h-10 rounded-full p-1 z-10 ${
-          step !== "four" ? "bg-white border-pink-500 border-2" : ""
+          step !== "four" ? "bg-white border-pink-500 border-2" : "bg-pink-500"
         }`}
       >
         <HeartIcon
