@@ -3,10 +3,10 @@ import { relations } from "drizzle-orm";
 import { boolean, date, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
 
 export const users = pgTable('users', {
-    id: text('id').$defaultFn(() => createId()),
+    id: text('id').$defaultFn(() => createId()).primaryKey(),
     firstName: text('first_name'),
     lastName: text('last_name'),
-    email: text('email'),
+    email: text('email').unique(),
     icNumber: text('ic_number'),
     phone: text('phone'),
     address_1: text('address_1'),
@@ -31,7 +31,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 }));
 
 export const diseases = pgTable('diseases', {
-    id: text('id').$defaultFn(() => createId()),
+    id: text('id').$defaultFn(() => createId()).primaryKey(),
     name: text('name'),
     description: text('description'),
     label: text('label'),

@@ -23,12 +23,15 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Stepper } from "../stepper";
+import { registerStepThree } from "./actions";
+import { useSearchParams } from "next/navigation";
 
 const userRegisterFormStepThreeSchema = z.object({
   occupation: z.string().min(1, { message: "Occupation is required" }),
 });
 
 export function RegisterStepThreeForm() {
+  const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof userRegisterFormStepThreeSchema>>({
     resolver: zodResolver(userRegisterFormStepThreeSchema),
     defaultValues: {
@@ -36,8 +39,13 @@ export function RegisterStepThreeForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof userRegisterFormStepThreeSchema>) {
-    console.log(values);
+  async function onSubmit(
+    values: z.infer<typeof userRegisterFormStepThreeSchema>
+  ) {
+    await registerStepThree({
+      id: searchParams.get("id")!,
+      occupation: values.occupation,
+    });
   }
 
   return (
@@ -45,7 +53,7 @@ export function RegisterStepThreeForm() {
       <div className="pb-2">
         <Stepper step="three" />
       </div>
-      <Card >
+      <Card>
         <CardContent className="py-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

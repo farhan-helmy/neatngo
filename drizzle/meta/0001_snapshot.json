@@ -1,6 +1,6 @@
 {
-  "id": "61f47a75-25a6-47fb-ad79-122d87b449fc",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "95879d1b-53c0-47e6-8c5b-c9c4f767b9e0",
+  "prevId": "61f47a75-25a6-47fb-ad79-122d87b449fc",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -11,8 +11,8 @@
         "id": {
           "name": "id",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false
+          "primaryKey": true,
+          "notNull": true
         },
         "name": {
           "name": "name",
@@ -71,8 +71,8 @@
         "id": {
           "name": "id",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false
+          "primaryKey": true,
+          "notNull": true
         },
         "first_name": {
           "name": "first_name",
@@ -195,7 +195,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      }
     },
     "public.users_to_diseases": {
       "name": "users_to_diseases",

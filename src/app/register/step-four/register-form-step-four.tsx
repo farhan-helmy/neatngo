@@ -42,6 +42,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { registerStepFour } from "./actions";
+import { useSearchParams } from "next/navigation";
 
 const diseases = [
   { label: "Cystic Fibrosis", value: "Cystic Fibrosis" },
@@ -113,6 +115,8 @@ const userRegisterFormStepFourSchema = z.object({
 });
 
 export function RegisterStepFourForm() {
+  const searchParams = useSearchParams();
+
   const [memberType, setMemberType] = useState("MONTHLY");
   const form = useForm<z.infer<typeof userRegisterFormStepFourSchema>>({
     resolver: zodResolver(userRegisterFormStepFourSchema),
@@ -122,8 +126,13 @@ export function RegisterStepFourForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof userRegisterFormStepFourSchema>) {
-    console.log(values);
+  async function onSubmit(
+    values: z.infer<typeof userRegisterFormStepFourSchema>
+  ) {
+    await registerStepFour({
+      id: searchParams.get("id")!,
+      ...values,
+    });
   }
 
   return (

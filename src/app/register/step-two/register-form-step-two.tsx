@@ -27,6 +27,8 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { findPostcode } from "malaysia-postcodes";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useParams, useSearchParams } from "next/navigation";
+import registerUserStepTwo from "./actions";
 
 const userRegisterFormStepTwoSchema = z.object({
   address_1: z.string().min(1, { message: "Address 1 is required" }),
@@ -34,18 +36,10 @@ const userRegisterFormStepTwoSchema = z.object({
   city: z.string().min(1, { message: "City is required" }),
   state: z.string().min(1, { message: "State is required" }),
   postcode: z.string().min(1, { message: "Postcode is required" }),
-  occupation: z.string().min(1, { message: "Occupation is required" }),
-  nameOfDisorder: z
-    .string()
-    .min(1, { message: "Name of disorder is required" }),
-  membershipType: z.string().min(1, { message: "Membership type is required" }),
-  isPaid: z.boolean(),
-  membershipStart: z.date(),
-  membershipExpiry: z.date(),
-  role: z.string().min(1, { message: "Role is required" }),
 });
 
 export function RegisterStepTwoForm() {
+  const searchParams = useSearchParams();
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const form = useForm<z.infer<typeof userRegisterFormStepTwoSchema>>({
@@ -72,8 +66,13 @@ export function RegisterStepTwoForm() {
     }
   }
 
-  function onSubmit(values: z.infer<typeof userRegisterFormStepTwoSchema>) {
-    console.log(values);
+  async function onSubmit(
+    values: z.infer<typeof userRegisterFormStepTwoSchema>
+  ) {
+    await registerUserStepTwo({
+      id: searchParams.get("id") as string,
+      ...values,
+    });
   }
 
   console.log(form.getValues("city"));

@@ -22,27 +22,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Stepper } from "./stepper";
+import registerUserStepOne from "./actions";
+import { isValidIc } from "malaysiaic";
 
 const userRegisterFormSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   lastName: z.string().min(1, { message: "Last name is required" }),
   email: z.string().email({ message: "Email must be a valid email" }),
-  icNumber: z.string().min(1, { message: "IC number is required" }),
-  phone: z.string().min(1, { message: "Phone number is required" }),
-  address_1: z.string().min(1, { message: "Address 1 is required" }),
-  address_2: z.string().min(1, { message: "Address 2 is required" }),
-  city: z.string().min(1, { message: "City is required" }),
-  state: z.string().min(1, { message: "State is required" }),
-  postcode: z.string().min(1, { message: "Postcode is required" }),
-  occupation: z.string().min(1, { message: "Occupation is required" }),
-  nameOfDisorder: z
+  icNumber: z
     .string()
-    .min(1, { message: "Name of disorder is required" }),
-  membershipType: z.string().min(1, { message: "Membership type is required" }),
-  isPaid: z.boolean(),
-  membershipStart: z.date(),
-  membershipExpiry: z.date(),
-  role: z.string().min(1, { message: "Role is required" }),
+    .min(1, { message: "IC number is required" })
+    .superRefine((ic, ctx) => {
+      if (!isValidIc(ic)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "IC number is invalid",
+        });
+      }
+      return true;
+    }),
+  phone: z.string().min(1, { message: "Phone number is required" }),
 });
 
 export function RegisterForm() {
@@ -54,24 +53,13 @@ export function RegisterForm() {
       email: "",
       icNumber: "",
       phone: "",
-      address_1: "",
-      address_2: "",
-      city: "",
-      state: "",
-      postcode: "",
-      occupation: "",
-      nameOfDisorder: "",
-      membershipType: "",
-      isPaid: false,
-      membershipStart: new Date(),
-      membershipExpiry: new Date(),
-      role: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof userRegisterFormSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof userRegisterFormSchema>) {
+    return await registerUserStepOne(values);
   }
+
   return (
     <>
       <div className="pb-2">
@@ -131,7 +119,7 @@ export function RegisterForm() {
               />
               <FormField
                 control={form.control}
-                name="email"
+                name="icNumber"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>IC No.</FormLabel>
@@ -145,12 +133,12 @@ export function RegisterForm() {
               />
               <FormField
                 control={form.control}
-                name="email"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder="60123456789" {...field} />
+                      <Input placeholder="0123456789" {...field} />
                     </FormControl>
                     <FormDescription>Enter your phone number.</FormDescription>
                     <FormMessage />
