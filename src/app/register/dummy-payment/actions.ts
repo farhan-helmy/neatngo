@@ -19,6 +19,7 @@ export async function paymentSuccess({ id }: { id: string }) {
                 membershipStart: new Date().toDateString(),
                 membershipExpiry: new Date(Date.now() + 2629746000).toDateString()
             })
+                .where(eq(users.id, id))
                 .returning({ id: users.id });
 
             redirect(`/register/done?id=${res[0].id}`);
@@ -28,6 +29,7 @@ export async function paymentSuccess({ id }: { id: string }) {
                 membershipStart: new Date().toDateString(),
                 membershipExpiry: new Date(Date.now() + 31556952000).toDateString()
             })
+                .where(eq(users.id, id))
                 .returning({ id: users.id });
 
             redirect(`/register/done?id=${res[0].id}`);
@@ -37,6 +39,7 @@ export async function paymentSuccess({ id }: { id: string }) {
                 membershipStart: new Date().toDateString(),
                 membershipExpiry: "LIFETIME_NO_EXPIRY"
             })
+                .where(eq(users.id, id))
                 .returning({ id: users.id });
 
             redirect(`/register/done?id=${res[0].id}`);
