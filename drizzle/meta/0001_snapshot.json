@@ -1,7 +1,5 @@
 {
-  "id": "95879d1b-53c0-47e6-8c5b-c9c4f767b9e0",
-  "prevId": "61f47a75-25a6-47fb-ad79-122d87b449fc",
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "tables": {
     "public.diseases": {
@@ -198,10 +196,10 @@
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
@@ -227,28 +225,28 @@
         "users_to_diseases_user_id_users_id_fk": {
           "name": "users_to_diseases_user_id_users_id_fk",
           "tableFrom": "users_to_diseases",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "users_to_diseases_disease_id_diseases_id_fk": {
           "name": "users_to_diseases_disease_id_diseases_id_fk",
           "tableFrom": "users_to_diseases",
-          "tableTo": "diseases",
           "columnsFrom": [
             "disease_id"
           ],
+          "tableTo": "diseases",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -266,8 +264,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "95879d1b-53c0-47e6-8c5b-c9c4f767b9e0",
+  "prevId": "61f47a75-25a6-47fb-ad79-122d87b449fc"
 }
