@@ -111,10 +111,17 @@ export type Employee = {
 };
 
 export const navItems: NavItem[] = [
+
     {
-        title: "Dashboard",
+        title: "Home",
         href: "/dashboard",
         icon: "dashboard",
         label: "Dashboard",
-    }
+    },
+    {
+        title: "Organization",
+        href: "/dashboard/organization",
+        icon: "employee",
+        label: "organization",
+    },
 ];
