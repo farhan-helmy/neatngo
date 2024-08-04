@@ -61,7 +61,6 @@ export const users = pgTable("users", {
   email: text("email").unique().notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
-  password: text("password").notNull(), 
   subscriptionTier: subscriptionTierEnum("subscription_tier")
     .default("FREE")
     .notNull(),
