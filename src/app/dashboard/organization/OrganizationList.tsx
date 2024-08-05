@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Eye } from "lucide-react";
+import Link from "next/link";
 
 export function OrganizationList({ id, name }: { id: string; name: string }) {
   return (
@@ -19,7 +19,9 @@ export function OrganizationList({ id, name }: { id: string; name: string }) {
         </CardHeader>
       </CardContent>
       <CardFooter className="flex items-end justify-end">
-        <Button>View</Button>
+        <Button asChild>
+          <Link href={`/dashboard/organization/${id}`}>View</Link>
+        </Button>
       </CardFooter>
     </Card>
   );

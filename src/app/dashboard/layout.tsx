@@ -5,14 +5,15 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { navItems } from "../admin/data";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, PersonStanding } from "lucide-react";
 import { useState } from "react";
 import { NavItem } from "@/types";
 import { Dispatch, SetStateAction } from "react";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { Toaster } from "@/components/ui/sonner";
 import { UserButton } from "@clerk/nextjs";
 import { ToggleTheme } from "@/components/layout/toggle-theme";
+import { Button } from "@/components/ui/button";
 
 interface DashboardNavProps {
   items: NavItem[];
@@ -20,6 +21,11 @@ interface DashboardNavProps {
 }
 
 function SideBar() {
+  const path = usePathname();
+  const params = useParams();
+
+  console.log(path);
+
   return (
     <nav
       className={cn(`relative hidden h-screen border-r pt-16 lg:block w-72`)}
@@ -27,10 +33,33 @@ function SideBar() {
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="space-y-1">
-            <h2 className="mb-2 px-4 text-xl font-semibold tracking-tight">
-              Overview
-            </h2>
-            <DashboardNav items={navItems} />
+            {path.match("organization/") ? (
+              <>
+                <Button asChild variant={"ghost"}>
+                  <Link href={`/dashboard/organization/${params.id}`}>
+                    <h2 className="mb-2 px-4 text-xl font-semibold tracking-tight">
+                      Organization
+                    </h2>
+                  </Link>
+                </Button>
+
+                <nav className="grid items-start gap-2">
+                  <Link href={`${path}/members`}>
+                    <span
+                      className={cn(
+                        "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                        path.includes("members") ? "bg-accent" : "transparent"
+                      )}
+                    >
+                      <PersonStanding className="mr-2 h-4 w-4" />
+                      <span>Members</span>
+                    </span>
+                  </Link>
+                </nav>
+              </>
+            ) : (
+              <DashboardNav items={navItems} />
+            )}
           </div>
         </div>
       </div>
