@@ -24,8 +24,6 @@ function SideBar() {
   const path = usePathname();
   const params = useParams();
 
-  console.log(path);
-
   return (
     <nav
       className={cn(`relative hidden h-screen border-r pt-16 lg:block w-72`)}
@@ -44,7 +42,11 @@ function SideBar() {
                 </Button>
 
                 <nav className="grid items-start gap-2">
-                  <Link href={`${path}/members`}>
+                  <Link
+                    href={`${path}${
+                      path.includes("/members") ? "" : "/members"
+                    }`}
+                  >
                     <span
                       className={cn(
                         "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
