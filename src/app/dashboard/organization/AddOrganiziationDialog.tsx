@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { PlusCircleIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
