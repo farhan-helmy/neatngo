@@ -6,6 +6,33 @@ import { handleApiRequest } from "@/helper";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+
+export async function getMembers({
+    organizationId
+}: {
+    organizationId: string;
+}) {
+    // const res = await db.query.memberships.findMany({
+    //     where: eq(memberships.organizationId, organizationId),
+    //     with: {
+    //         user: true
+    //     }
+    // })
+
+    const res = await db.select({
+        id: users.id,
+        fullName: users.firstName,
+        email: users.email,
+        phoneNumber: memberships.phone
+    }).from(memberships)
+        .where(eq(memberships.organizationId, organizationId))
+        .leftJoin(users, eq(users.id, memberships.userId))
+
+    console.log(res)
+    return res
+}
+
+
 export async function addMember({
     fullName,
     email,
