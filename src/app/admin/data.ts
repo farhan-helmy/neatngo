@@ -125,3 +125,14 @@ export const navItems: NavItem[] = [
         label: "organization",
     },
 ];
+
+export const orgNavItems = [
+    {
+        title: "Organization List",
+        href: "/dashboard/organization",
+    },
+    {
+        title: "Add Organization",
+        href: "/dashboard/organization/add",
+    },
+];

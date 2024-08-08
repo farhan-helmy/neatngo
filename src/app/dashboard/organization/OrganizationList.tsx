@@ -14,19 +14,6 @@ import Link from "next/link";
 
 export function OrganizationList({ id, name }: { id: string; name: string }) {
   return (
-    // <Card>
-    //   <CardContent>
-    //     <CardHeader>
-    //       <CardTitle>{name}</CardTitle>
-    //     </CardHeader>
-    //   </CardContent>
-    //   <CardFooter className="flex items-end justify-end">
-    //     <Button asChild>
-    //       <Link href={`/dashboard/organization/${id}`}>View</Link>
-    //     </Button>
-    //   </CardFooter>
-    // </Card>
-
     <div key={id} className="overflow-hidden rounded-xl border border-gray-200">
       <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
         <Image
