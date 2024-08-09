@@ -176,7 +176,7 @@ export default function DashboardLayout({
   return (
     <>
       <Header />
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen">
         <SideBar />
         <main className="w-full pt-16 px-2">{children}</main>
         <Toaster />
