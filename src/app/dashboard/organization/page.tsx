@@ -29,7 +29,7 @@ export default async function OrganizationPage() {
         <AddOrganizationDialog />
       </LayoutHeader>
       <LayoutBody>
-        <div className="flex gap-1">
+        <div className="grid grid-cols-3 gap-4">
           {org.map((o) => (
             <OrganizationList key={o.id} id={o.id} name={o.name} />
           ))}

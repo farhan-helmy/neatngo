@@ -8,9 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { EyeIcon, TrashIcon } from "lucide-react";
+import { Divide, EyeIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { deleteOrganization } from "./actions";
+import { toast, Toaster } from "sonner";
 
 export function OrganizationList({ id, name }: { id: string; name: string }) {
   return (
@@ -34,7 +36,13 @@ export function OrganizationList({ id, name }: { id: string; name: string }) {
             <EyeIcon className="h-4 w-4" aria-hidden="true" />
           </Link>
           <button
-            onClick={() => console.log("nigga")}
+            onClick={() => {
+              deleteOrganization({ id });
+
+              toast.message("Organization has been deleted", {
+                description: name,
+              });
+            }}
             className="-m-2.5 block p-2.5 text-gray-400 hover:text-red-500"
           >
             <TrashIcon className="h-4 w-4" aria-hidden="true" />
