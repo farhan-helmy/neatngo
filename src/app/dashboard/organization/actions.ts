@@ -1,32 +1,46 @@
 "use server";
 
 import { db } from "@/db";
-import { organizations, users } from "@/db/schema";
+import { memberships, organizations, users } from "@/db/schema";
+import { handleApiRequest } from "@/helper";
 import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 
 export async function addOrganization({ name }: { name: string }) {
-    const { sessionClaims } = auth();
+    return handleApiRequest(async () => {
+        const { sessionClaims } = auth();
 
-    const res = await db.transaction(async (tx) => {
-        const user = await tx.select({ id: users.id }).from(users).where(eq(users.email, sessionClaims?.email as string));
+        const res = await db.transaction(async (tx) => {
+            const user = await tx.select({ id: users.id }).from(users).where(eq(users.email, sessionClaims?.email as string));
 
-        if (!user) {
-            throw new Error("User not found");
-        }
+            if (!user) {
+                throw new Error("User not found");
+            }
 
-        const organization = await tx.insert(organizations).values({
-            name,
-            rosRegistrationNumber: "",
-            createdById: user[0].id,
-        }).returning({
-            orgId: organizations.id,
-        });
+            const organizationCount = await tx.select({
+                organizationCount: count(organizations.id),
+            })
+                .from(users)
+                .leftJoin(organizations, eq(users.id, organizations.createdById))
 
-        return organization;
+
+            if (organizationCount[0].organizationCount > 1) {
+                throw new Error("You have reached the maximum number of organizations you can create")
+            }
+
+            const organization = await tx.insert(organizations).values({
+                name,
+                rosRegistrationNumber: "",
+                createdById: user[0].id,
+            }).returning({
+                orgId: organizations.id,
+            });
+
+            return organization;
+        })
+
+
+
+        return res
     })
-
-
-
-    return res
 }   
