@@ -18,7 +18,7 @@ const features: FeatureProps[] = [
   {
     title: "Excel Import",
     description:
-      "Easily import existing users from Excel spreadsheets, streamlining your transition to NGOMS.",
+      "Easily import existing users from Excel spreadsheets, streamlining your transition to NeatNGO.",
     link: "",
   },
   {
