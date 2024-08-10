@@ -1,10 +1,25 @@
-import { HeroSection } from "@/components/layout/sections/hero";
-import Image from "next/image";
+import { About } from "@/components/landing/About";
+import { Cta } from "@/components/landing/Cta";
+import { FAQ } from "@/components/landing/FAQ";
+import { Features } from "@/components/landing/Features";
+import { Footer } from "@/components/landing/Footer";
+import { Hero } from "@/components/landing/Hero";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { Navbar } from "@/components/landing/Navbar";
+import { Newsletter } from "@/components/landing/Newsletter";
+import { Pricing } from "@/components/landing/Pricing";
+import { ScrollToTop } from "@/components/landing/ScrollToTop";
+import { Services } from "@/components/landing/Services";
+import { Team } from "@/components/landing/Team";
 
 export default function Home() {
   return (
     <>
-      <HeroSection />
+      <Navbar />
+      <Hero />
+      <About />
+      <Features />
+      <ScrollToTop />
     </>
   );
 }
