@@ -1,5 +1,6 @@
-import { ChevronLeft, PlusCircle, Upload } from "lucide-react";
+import { ChevronLeft, PlusCircle, Upload, UserCircle } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { db } from "@/db";
 import { events, eventTypeEnum } from "@/db/schema";
@@ -11,7 +12,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,28 +23,29 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { formatDuration } from "date-fns";
 
-export default async function viewEventPage({
+type EventType = (typeof eventTypeEnum.enumValues)[number];
+
+const eventTypeLabels: Record<EventType, string> = {
+  WORKSHOP: "Workshop",
+  FUNDRAISER: "Fundraiser",
+  VOLUNTEER_ACTIVITY: "Volunteer Activity",
+  MEETING: "Meeting",
+  OTHER: "Other",
+};
+
+const dummyParticipants = [
+  { id: 1, name: "Alice Johnson", role: "Attendee" },
+  { id: 2, name: "Bob Smith", role: "Speaker" },
+  { id: 3, name: "Charlie Brown", role: "Organizer" },
+  { id: 4, name: "Diana Prince", role: "Attendee" },
+  { id: 5, name: "Ethan Hunt", role: "Volunteer" },
+];
+
+export default async function ViewEventPage({
   params,
 }: {
   params: { id: string; eventId: string };
@@ -56,13 +57,16 @@ export default async function viewEventPage({
     },
   });
 
-  const eventTypeLabels = {
-    WORKSHOP: "Workshop",
-    FUNDRAISER: "Fundraiser",
-    VOLUNTEER_ACTIVITY: "Volunteer Activity",
-    MEETING: "Meeting",
-    OTHER: "Other",
-  };
+  if (!event) {
+    return <div>Event not found</div>;
+  }
+
+  const isValidEventType = (type: string): type is EventType =>
+    eventTypeEnum.enumValues.includes(type as EventType);
+
+  const eventTypeLabel = isValidEventType(event.eventType)
+    ? eventTypeLabels[event.eventType]
+    : "Unknown Event Type";
 
   return (
     <Layout>
@@ -70,19 +74,21 @@ export default async function viewEventPage({
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/organization/${params.id}">
+              <BreadcrumbLink href={`/dashboard/organization/${params.id}`}>
                 Organization
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/organization/${params.id}/events">
+              <BreadcrumbLink
+                href={`/dashboard/organization/${params.id}/events`}
+              >
                 Events
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{event?.name}</BreadcrumbPage>
+              <BreadcrumbPage>{event.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -90,23 +96,18 @@ export default async function viewEventPage({
       <LayoutBody>
         <div className="grid max-w-[59rem] flex-1 auto-rows-max gap-4">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" className="h-7 w-7">
-              <ChevronLeft className="h-4 w-4" />
-              <span className="sr-only">Back</span>
-            </Button>
+            <Link href={`/dashboard/organization/${params.id}/events`} passHref>
+              <Button variant="outline" size="icon" className="h-7 w-7">
+                <ChevronLeft className="h-4 w-4" />
+                <span className="sr-only">Back</span>
+              </Button>
+            </Link>
             <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-              {event?.name}
+              {event.name}
             </h1>
             <Badge variant="outline" className="ml-auto sm:ml-0">
-              pluh
+              {eventTypeLabel}
             </Badge>
-            {/* can reuse for edit page */}
-            {/* <div className="hidden items-center gap-2 md:ml-auto md:flex">
-              <Button variant="outline" size="sm">
-                Discard
-              </Button>
-              <Button size="sm">Save Product</Button>
-            </div> */}
           </div>
           <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
@@ -121,69 +122,71 @@ export default async function viewEventPage({
                   <div className="grid gap-6">
                     <div className="grid gap-3">
                       <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        type="text"
-                        className="w-full"
-                        defaultValue={event?.name}
-                      />
+                      <div className="font-medium">{event.name}</div>
                     </div>
                     <div className="grid gap-3">
                       <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        className="min-h-32"
-                        placeholder="Event description"
-                      />
+                      <div className="whitespace-pre-wrap">
+                        {event.description || "No description provided."}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>Publish Event</CardTitle>
+                  <CardTitle>Event Participants</CardTitle>
                   <CardDescription>
-                    Publish the event to the public.
+                    People involved in this event.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div></div>
-                  <Button size="sm" variant="secondary">
-                    Publish Event
-                  </Button>
+                  <div className="space-y-4">
+                    {dummyParticipants.map((participant) => (
+                      <div
+                        key={participant.id}
+                        className="flex items-center gap-3"
+                      >
+                        <UserCircle className="h-8 w-8 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium">{participant.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {participant.role}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4">
+                    <Button size="sm" variant="outline">
+                      View All Participants
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
             <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
               <Card>
                 <CardHeader>
-                  <CardTitle>Miscellaneous</CardTitle>
+                  <CardTitle>Event Details</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6">
                     <div className="grid gap-3">
-                      <Label htmlFor="eventType">Event Type</Label>
-                      <Select>
-                        <SelectTrigger
-                          id="eventType"
-                          aria-label="Select event type"
-                        >
-                          <SelectValue placeholder="Select event type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {eventTypeEnum.enumValues.map((value) => (
-                            <SelectItem key={value} value={value}>
-                              {eventTypeLabels[value] || value}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Label htmlFor="maxAttendees">Max Attendees</Label>
-                      <Input
-                        type="number"
-                        min={1}
-                        defaultValue={event?.maxAttendees}
-                      />
+                      <Label>Event Type</Label>
+                      <div>{eventTypeLabel}</div>
+                    </div>
+                    <div className="grid gap-3">
+                      <Label>Max Attendees</Label>
+                      <div>{event.maxAttendees || "Unlimited"}</div>
+                    </div>
+                    <div className="grid gap-3">
+                      <Label>Start Date and Time</Label>
+                      <div>{new Date(event.startDate).toLocaleString()}</div>
+                    </div>
+                    <div className="grid gap-3">
+                      <Label>End Date and Time</Label>
+                      <div>{new Date(event.endDate).toLocaleString()}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -220,21 +223,15 @@ export default async function viewEventPage({
                           width="84"
                         />
                       </button>
-                      <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed">
+                      {/* <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed">
                         <Upload className="h-4 w-4 text-muted-foreground" />
                         <span className="sr-only">Upload</span>
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
-          </div>
-          <div className="flex items-center justify-center gap-2 md:hidden">
-            <Button variant="outline" size="sm">
-              Discard
-            </Button>
-            <Button size="sm">Save Product</Button>
           </div>
         </div>
       </LayoutBody>
