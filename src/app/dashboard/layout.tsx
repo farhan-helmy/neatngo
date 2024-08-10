@@ -138,7 +138,11 @@ function Header() {
       <nav className="h-14 flex items-center justify-between px-4">
         <div className="hidden lg:block">
           <Link href="/dashboard" target="_blank">
-            <div className="font-bold">NGOMS Dashboard</div>
+            <div className="font-bold">
+              <span className="inline bg-gradient-to-r from-[#F596D3]  to-[#D247BF] text-transparent bg-clip-text">
+                NeatNGO
+              </span>{" "}
+            </div>
           </Link>
         </div>
         <div className={cn("block lg:!hidden")}>

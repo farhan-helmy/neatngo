@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Navbar } from "@/components/layout/navbar";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import "./globals.css";
 import { ClerkProvider, SignedOut } from "@clerk/nextjs";
@@ -23,15 +22,13 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="pt-br" suppressHydrationWarning>
-        <body className={cn("min-h-screen bg-background", inter.className)}>
+        <body className={cn("", inter.className)}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-
             {children}
             <Toaster />
           </ThemeProvider>
