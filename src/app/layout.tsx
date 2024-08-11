@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "NeatNGO - Efficient NGO Management System",
     description:
       "Ditch excel sheets and streamline your NGO operations with our comprehensive management solution.",
-    images: ["https://neatngo.com/api/og"],
+    images: ["https://neatngo.com/og"],
   },
 };
 

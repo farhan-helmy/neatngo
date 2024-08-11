@@ -4,10 +4,10 @@ import OGImage from "@/components/seo/OgImage";
 
 export const runtime = "edge";
 
-export default async function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const fontData = await fetch(
-      new URL("../../public/assets/Inter-Bold.ttf", import.meta.url)
+      new URL("../../../public/assets/Inter-Bold.ttf", import.meta.url)
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(<OGImage />, {
