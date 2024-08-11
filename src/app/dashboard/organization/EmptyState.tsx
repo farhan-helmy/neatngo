@@ -24,7 +24,6 @@ export function EmptyState() {
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Get started by creating a new organization.
       </p>
-      <Button className="mt-4">Create organization</Button>
     </div>
   );
 }

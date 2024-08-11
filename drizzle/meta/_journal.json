@@ -29,6 +29,13 @@
       "when": 1722701378037,
       "tag": "0003_spooky_mojo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1723390100204,
+      "tag": "0004_sweet_zodiak",
+      "breakpoints": true
     }
   ]
 }
