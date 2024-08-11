@@ -5,6 +5,7 @@ import { memberships, organizations, users } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
 import { auth } from "@clerk/nextjs/server";
 import { count, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 export async function addOrganization({ name }: { name: string }) {
     return handleApiRequest(async () => {
@@ -21,7 +22,7 @@ export async function addOrganization({ name }: { name: string }) {
                 organizationCount: count(organizations.id),
             })
                 .from(users)
-                .leftJoin(organizations, eq(users.id, organizations.createdById))
+                .leftJoin(organizations, eq(organizations.createdById, user[0].id))
 
 
             if (organizationCount[0].organizationCount > 1) {
@@ -39,6 +40,7 @@ export async function addOrganization({ name }: { name: string }) {
             return organization;
         })
 
+        revalidatePath("/dashboard/organization")
 
 
         return res
