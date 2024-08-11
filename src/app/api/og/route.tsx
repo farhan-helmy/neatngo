@@ -2,11 +2,9 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import OGImage from "@/components/seo/OgImage";
 
-export const config = {
-  runtime: "edge",
-};
+export const runtime = "edge";
 
-export default async function handler(req: NextRequest) {
+export default async function GET(req: NextRequest) {
   try {
     const fontData = await fetch(
       new URL("../../public/assets/Inter-Bold.ttf", import.meta.url)
