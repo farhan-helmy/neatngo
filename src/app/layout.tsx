@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     url: "https://neatngo.com",
     images: [
       {
-        url: "https://neatngo.com/api/og",
+        url: "https://neatngo.com/og",
         width: 1200,
         height: 630,
         alt: "NeatNGO Open Graph Image",
