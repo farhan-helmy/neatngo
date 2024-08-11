@@ -96,7 +96,7 @@ export function OrganizationPageContent({
                   </TableHeader>
                   <TableBody>
                     {members.map((member) => (
-                      <TableRow>
+                      <TableRow key={member.id}>
                         <TableCell>
                           <div className="font-medium">
                             {member.user.firstName}
