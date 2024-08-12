@@ -46,12 +46,15 @@ export function EventsTable({
                     <EyeIcon size={20} />
                   </Button>
                 </Link>
-
+                <Link
+                  href={`/dashboard/organization/${organizationId}/events/${event.id}/edit`}
+                >
+                  <Button variant="ghost">
+                    <Edit2 size={20} />
+                  </Button>
+                </Link>
                 <Button variant="ghost">
                   <Trash2 size={20} />
-                </Button>
-                <Button variant="ghost">
-                  <Edit2 size={20} />
                 </Button>
               </div>
             </TableCell>

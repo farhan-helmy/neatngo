@@ -23,7 +23,6 @@ export async function getEvents({
     .from(events)
     .where(eq(events.organizationId, organizationId));
 
-  console.log(res);
   return res;
 }
 
@@ -40,7 +39,7 @@ export async function addEvent({
   organizationId: string;
   name: string;
   description: string;
-  eventType: (typeof eventTypeEnum)["enumValues"][number]; // union of all possible values of the enum
+  eventType: (typeof eventTypeEnum)["enumValues"][number]; 
   startDate: Date;
   endDate: Date;
   location: string;
@@ -71,3 +70,61 @@ export async function addEvent({
     return res;
   });
 }
+
+export async function updateEvent({
+  eventId,
+  name,
+  description,
+  eventType,
+  startDate,
+  endDate,
+  location,
+  maxAttendees,
+}: {
+  eventId: string;
+  name: string;
+  description: string;
+  eventType: (typeof eventTypeEnum)["enumValues"][number];
+  startDate: Date;
+  endDate: Date;
+  location: string;
+  maxAttendees: number;
+}) {
+  return handleApiRequest(async () => {
+    try {
+      const res = await db.transaction(async (tx) => {
+        const updatedEvent = await tx
+          .update(events)
+          .set({
+            name,
+            description,
+            eventType,
+            startDate,
+            endDate,
+            location,
+            maxAttendees,
+          })
+          .where(eq(events.id, eventId))
+          .returning({
+            id: events.id,
+            name: events.name,
+            organizationId: events.organizationId,
+          });
+
+        if (!updatedEvent.length) {
+          throw new Error("Event not found or update failed");
+        }
+
+        return updatedEvent[0];
+      });
+
+      revalidatePath(`/dashboard/organization/${res.organizationId}/events`);
+
+      return res;
+    } catch (error) {
+      console.error("Error updating event:", error);
+      throw error; 
+    }
+  });
+}
+

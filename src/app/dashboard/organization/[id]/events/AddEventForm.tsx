@@ -85,11 +85,11 @@ const formSchema = z
       if (data.startDate && data.endDate) {
         return data.endDate >= data.startDate;
       }
-      return true; // If either date is missing, we'll let the required error handle it
+      return true; 
     },
     {
       message: "End date must not be earlier than start date",
-      path: ["endDate"], // This specifies which field the error is associated with
+      path: ["endDate"], 
     }
   );
 
@@ -132,7 +132,6 @@ export function AddEventForm() {
     if (response.error) {
       toast.error(response.error);
     } else if (response.data) {
-      console.log(response.data);
       toast.success("Event added successfully");
       setOpen(false);
     }
