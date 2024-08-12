@@ -133,15 +133,17 @@ CREATE TABLE IF NOT EXISTS "organizations" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-DROP TABLE "diseases";--> statement-breakpoint
-DROP TABLE "users_to_diseases";--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "email" SET NOT NULL;--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "created_at" SET DATA TYPE timestamp;--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "created_at" SET NOT NULL;--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "updated_at" SET DATA TYPE timestamp;--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "updated_at" SET NOT NULL;--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "password" text NOT NULL;--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "subscription_tier" "subscription_tier" DEFAULT 'FREE' NOT NULL;--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "users" (
+	"id" text PRIMARY KEY NOT NULL,
+	"email" text NOT NULL,
+	"first_name" text,
+	"last_name" text,
+	"subscription_tier" "subscription_tier" DEFAULT 'FREE' NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "users_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "custom_fields" ADD CONSTRAINT "custom_fields_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
@@ -201,18 +203,3 @@ DO $$ BEGIN
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
---> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "ic_number";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "phone";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "address_1";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "address_2";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "city";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "state";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "postcode";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "occupation";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "name_of_disorder";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "membership_type";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "is_paid";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "membership_start_date";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "membership_expiry";--> statement-breakpoint
-ALTER TABLE "users" DROP COLUMN IF EXISTS "role";

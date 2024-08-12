@@ -4,7 +4,7 @@ import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MenuIcon, PersonStanding } from "lucide-react";
+import { CalendarClock, MenuIcon, PersonStanding } from "lucide-react";
 import { useState } from "react";
 import { NavItem } from "@/types";
 import { Dispatch, SetStateAction } from "react";
@@ -56,11 +56,7 @@ function SideBar() {
                 </Button>
 
                 <nav className="grid items-start gap-2">
-                  <Link
-                    href={`${path}${
-                      path.includes("/members") ? "" : "/members"
-                    }`}
-                  >
+                  <Link href={`/dashboard/organization/${params.id}/members`}>
                     <span
                       className={cn(
                         "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
@@ -69,6 +65,17 @@ function SideBar() {
                     >
                       <PersonStanding className="mr-2 h-4 w-4" />
                       <span>Members</span>
+                    </span>
+                  </Link>
+                  <Link href={`/dashboard/organization/${params.id}/events`}>
+                    <span
+                      className={cn(
+                        "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                        path.includes("events") ? "bg-accent" : "transparent"
+                      )}
+                    >
+                      <CalendarClock className="mr-2 h-4 w-4" />
+                      <span>Events</span>
                     </span>
                   </Link>
                 </nav>
@@ -187,7 +194,7 @@ export default function DashboardLayout({
   return (
     <>
       <Header />
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen">
         <SideBar />
         <main className="w-full pt-16 px-2">{children}</main>
         <Toaster />

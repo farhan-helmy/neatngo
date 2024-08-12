@@ -1,5 +1,4 @@
 import { Layout, LayoutBody, LayoutHeader } from "@/components/custom/layout";
-import { Button } from "@/components/ui/button";
 import { MembersTable } from "./MembersTable";
 import { AddMemberForm } from "./AddMemberForm";
 import { getMembers } from "./actions";
