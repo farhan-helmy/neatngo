@@ -4,7 +4,7 @@ import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MenuIcon, PersonStanding } from "lucide-react";
+import { CalendarClock, MenuIcon, PersonStanding } from "lucide-react";
 import { useState } from "react";
 import { NavItem } from "@/types";
 import { Dispatch, SetStateAction } from "react";
