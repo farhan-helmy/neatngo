@@ -1,3 +1,4 @@
+import { EventType, eventTypeEnum } from "@/db/schema";
 import { format, parseISO } from "date-fns";
 
 export function formatDate(date: Date) {
@@ -47,4 +48,24 @@ export async function handleApiRequest<T>(
       error instanceof Error ? error.message : "An unknown error occurred";
     return createApiResponse<T>(null, errorMessage);
   }
+}
+
+export function cleanEventType({ eventType }: { eventType: string }) {
+
+  const eventTypeLabels: Record<EventType, string> = {
+    WORKSHOP: "Workshop",
+    FUNDRAISER: "Fundraiser",
+    VOLUNTEER_ACTIVITY: "Volunteer Activity",
+    MEETING: "Meeting",
+    OTHER: "Other",
+  };
+
+  const isValidEventType = (type: string): type is EventType =>
+    eventTypeEnum.enumValues.includes(type as EventType);
+
+  const eventTypeLabel = isValidEventType(eventType)
+    ? eventTypeLabels[eventType]
+    : "Unknown Event Type";
+
+  return eventTypeLabel
 }

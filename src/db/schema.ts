@@ -47,6 +47,8 @@ export const eventTypeEnum = pgEnum("event_type", [
   "OTHER",
 ]);
 
+export type EventType = (typeof eventTypeEnum.enumValues)[number];
+
 export const donationStatusEnum = pgEnum("donation_status", [
   "PENDING",
   "COMPLETED",
@@ -278,3 +280,6 @@ export const donationsRelations = relations(donations, ({ one }) => ({
     references: [organizations.id],
   }),
 }));
+
+
+export type SelectEvent = typeof events.$inferSelect;

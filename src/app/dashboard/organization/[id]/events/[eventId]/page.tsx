@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { db } from "@/db";
-import { events, eventTypeEnum } from "@/db/schema";
+import { events, EventType } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 import { Layout, LayoutBody, LayoutHeader } from "@/components/custom/layout";
@@ -25,25 +25,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { formatDuration } from "date-fns";
-
-type EventType = (typeof eventTypeEnum.enumValues)[number];
-
-const eventTypeLabels: Record<EventType, string> = {
-  WORKSHOP: "Workshop",
-  FUNDRAISER: "Fundraiser",
-  VOLUNTEER_ACTIVITY: "Volunteer Activity",
-  MEETING: "Meeting",
-  OTHER: "Other",
-};
-
-const dummyParticipants = [
-  { id: 1, name: "Alice Johnson", role: "Attendee" },
-  { id: 2, name: "Bob Smith", role: "Speaker" },
-  { id: 3, name: "Charlie Brown", role: "Organizer" },
-  { id: 4, name: "Diana Prince", role: "Attendee" },
-  { id: 5, name: "Ethan Hunt", role: "Volunteer" },
-];
+import { cleanEventType } from "@/helper";
 
 export default async function ViewEventPage({
   params,
@@ -57,16 +39,20 @@ export default async function ViewEventPage({
     },
   });
 
+  const attendees = await db.query.eventRegistrations.findMany({
+    where: eq(events.id, params.eventId),
+    with: {
+      user: {
+        with: {
+          memberships: true,
+        },
+      },
+    },
+  });
+
   if (!event) {
     return <div>Event not found</div>;
   }
-
-  const isValidEventType = (type: string): type is EventType =>
-    eventTypeEnum.enumValues.includes(type as EventType);
-
-  const eventTypeLabel = isValidEventType(event.eventType)
-    ? eventTypeLabels[event.eventType]
-    : "Unknown Event Type";
 
   return (
     <Layout>
@@ -94,7 +80,7 @@ export default async function ViewEventPage({
         </Breadcrumb>
       </LayoutHeader>
       <LayoutBody>
-        <div className="grid max-w-[59rem] flex-1 auto-rows-max gap-4">
+        <div className="grid  flex-1 auto-rows-max gap-4">
           <div className="flex items-center gap-4">
             <Link href={`/dashboard/organization/${params.id}/events`} passHref>
               <Button variant="outline" size="icon" className="h-7 w-7">
@@ -106,7 +92,9 @@ export default async function ViewEventPage({
               {event.name}
             </h1>
             <Badge variant="outline" className="ml-auto sm:ml-0">
-              {eventTypeLabel}
+              {cleanEventType({
+                eventType: event.eventType as EventType,
+              })}
             </Badge>
             <div className="hidden items-center gap-2 md:ml-auto md:flex">
               <Link
@@ -150,20 +138,50 @@ export default async function ViewEventPage({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {dummyParticipants.map((participant) => (
-                      <div
-                        key={participant.id}
-                        className="flex items-center gap-3"
-                      >
-                        <UserCircle className="h-8 w-8 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">{participant.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {participant.role}
-                          </p>
+                    {attendees.length > 0 ? (
+                      attendees.map((attendee) => (
+                        <div
+                          key={attendee.id}
+                          className="grid grid-cols-3 gap-3"
+                        >
+                          <div className="flex items-center gap-2">
+                            <UserCircle className="h-8 w-8" />
+                            <div>
+                              <div className="font-medium">
+                                {attendee.user.firstName}
+                              </div>
+                              <div className="text-muted-foreground">
+                                {attendee.user.email}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <div className="grid grid-cols-3 gap-3">
+                              <div>
+                                <Label>Role</Label>
+                                <div>{attendee.user.memberships[0].role}</div>
+                              </div>
+                              <div>
+                                <Label>Registration Date</Label>
+                                <div>
+                                  {new Date(
+                                    attendee.registrationDate
+                                  ).toLocaleString()}
+                                </div>
+                              </div>
+                              <div>
+                                <Label>Attended</Label>
+                                <div>{attendee.attended ? "Yes" : "No"}</div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center justify-center  text-muted-foreground">
+                        <span>No participants yet</span>
                       </div>
-                    ))}
+                    )}
                   </div>
                   <div className="mt-4">
                     <Button size="sm" variant="outline">
@@ -182,7 +200,11 @@ export default async function ViewEventPage({
                   <div className="grid gap-6">
                     <div className="grid gap-3">
                       <Label>Event Type</Label>
-                      <div>{eventTypeLabel}</div>
+                      <div>
+                        {cleanEventType({
+                          eventType: event.eventType as EventType,
+                        })}
+                      </div>
                     </div>
                     <div className="grid gap-3">
                       <Label>Max Attendees</Label>

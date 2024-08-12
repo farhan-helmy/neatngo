@@ -45,53 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const formSchema = z
-  .object({
-    name: z
-      .string({
-        required_error: "Name is required",
-      })
-      .min(1, {
-        message: "Name is required",
-      })
-      .max(50, {
-        message: "Name must be less than 50 characters",
-      }),
-    description: z.string().max(1000, {
-      message: "Description must be less than 1000 characters",
-    }),
-    eventType: z.enum(eventTypeEnum["enumValues"]),
-    startDate: z.date({
-      required_error: "Start date is required",
-      invalid_type_error: "That's not a valid date",
-    }),
-    endDate: z.date({
-      required_error: "End date is required",
-      invalid_type_error: "That's not a valid date",
-    }),
-    location: z.string({
-      required_error: "Location is required",
-    }),
-    maxAttendees: z.coerce
-      .number({
-        required_error: "Max attendees is required",
-      })
-      .min(1, {
-        message: "Max attendees must be at least 1",
-      }),
-  })
-  .refine(
-    (data) => {
-      if (data.startDate && data.endDate) {
-        return data.endDate >= data.startDate;
-      }
-      return true; 
-    },
-    {
-      message: "End date must not be earlier than start date",
-      path: ["endDate"], 
-    }
-  );
+import { eventFormSchema } from "./event.schema";
 
 export function AddEventForm() {
   const { isLoading, withLoading } = useLoading();
@@ -105,8 +59,8 @@ export function AddEventForm() {
     OTHER: "Other",
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof eventFormSchema>>({
+    resolver: zodResolver(eventFormSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -117,25 +71,27 @@ export function AddEventForm() {
     },
   });
 
-  const onSubmit = withLoading(async (values: z.infer<typeof formSchema>) => {
-    const response = await addEvent({
-      name: values.name,
-      description: values.description,
-      eventType: values.eventType,
-      startDate: values.startDate,
-      endDate: values.endDate,
-      location: values.location,
-      maxAttendees: values.maxAttendees,
-      organizationId: params.id as string,
-    });
+  const onSubmit = withLoading(
+    async (values: z.infer<typeof eventFormSchema>) => {
+      const response = await addEvent({
+        name: values.name,
+        description: values.description,
+        eventType: values.eventType,
+        startDate: new Date(values.startDate),
+        endDate: new Date(values.endDate),
+        location: values.location,
+        maxAttendees: values.maxAttendees,
+        organizationId: params.id as string,
+      });
 
-    if (response.error) {
-      toast.error(response.error);
-    } else if (response.data) {
-      toast.success("Event added successfully");
-      setOpen(false);
+      if (response.error) {
+        toast.error(response.error);
+      } else if (response.data) {
+        toast.success("Event added successfully");
+        setOpen(false);
+      }
     }
-  });
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
