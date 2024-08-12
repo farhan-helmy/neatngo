@@ -46,7 +46,6 @@ export function AddOrganizationDialog() {
   const { isLoading, withLoading } = useLoading();
   const [open, setOpen] = useState(false);
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,13 +53,14 @@ export function AddOrganizationDialog() {
     },
   });
 
-  // 2. Define a submit handler.
   const onSubmit = withLoading(async (values: z.infer<typeof formSchema>) => {
-    const res = await addOrganization({
+    const response = await addOrganization({
       name: values.organizationName,
     });
 
-    if (res.length > 0) {
+    if (response.error) {
+      toast.error(response.error);
+    } else if (response.data) {
       toast.success("Organization added successfully");
       setOpen(false);
     }

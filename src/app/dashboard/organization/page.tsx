@@ -5,6 +5,7 @@ import { organizations, users } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { OrganizationList } from "./OrganizationList";
+import { EmptyState } from "./EmptyState";
 
 export default async function OrganizationPage() {
   const { sessionClaims } = auth();
@@ -22,6 +23,7 @@ export default async function OrganizationPage() {
 
     return organizationList;
   });
+
   return (
     <Layout>
       <LayoutHeader className="flex justify-between">
@@ -29,11 +31,15 @@ export default async function OrganizationPage() {
         <AddOrganizationDialog />
       </LayoutHeader>
       <LayoutBody>
-        <div className="grid grid-cols-3 gap-4">
-          {org.map((o) => (
-            <OrganizationList key={o.id} id={o.id} name={o.name} />
-          ))}
-        </div>
+        {org.length > 0 ? (
+          <div className="flex gap-1">
+            {org.map((o) => (
+              <OrganizationList key={o.id} id={o.id} name={o.name} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState />
+        )}
       </LayoutBody>
     </Layout>
   );

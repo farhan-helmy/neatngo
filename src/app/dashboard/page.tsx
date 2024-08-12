@@ -1,9 +1,21 @@
-import { UserDetails } from "@/components/user-details";
+"use client";
+import { Layout, LayoutBody, LayoutHeader } from "@/components/custom/layout";
+import { formatDate } from "@/helper";
+import { useUser } from "@clerk/nextjs";
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
+  const { user } = useUser();
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <>
-      <UserDetails />
-    </>
+    <Layout>
+      <LayoutHeader>Welcome back!</LayoutHeader>
+      <LayoutBody>
+        Last signed in at {formatDate(user.lastSignInAt!)}
+      </LayoutBody>
+    </Layout>
   );
 }

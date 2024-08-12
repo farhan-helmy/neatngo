@@ -1,10 +1,17 @@
-import { HeroSection } from "@/components/layout/sections/hero";
-import Image from "next/image";
+import { About } from "@/components/landing/About";
+import { Features } from "@/components/landing/Features";
+import { Hero } from "@/components/landing/Hero";
+import { Navbar } from "@/components/landing/Navbar";
+import { ScrollToTop } from "@/components/landing/ScrollToTop";
 
 export default function Home() {
   return (
     <>
-      <HeroSection />
+      <Navbar />
+      <Hero />
+      <About />
+      <Features />
+      <ScrollToTop />
     </>
   );
 }

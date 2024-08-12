@@ -4,8 +4,7 @@ import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { navItems } from "../admin/data";
-import { CalendarClock, MenuIcon, PersonStanding } from "lucide-react";
+import { MenuIcon, PersonStanding } from "lucide-react";
 import { useState } from "react";
 import { NavItem } from "@/types";
 import { Dispatch, SetStateAction } from "react";
@@ -19,6 +18,21 @@ interface DashboardNavProps {
   items: NavItem[];
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }
+
+const navItems: NavItem[] = [
+  {
+    title: "Home",
+    href: "/dashboard",
+    icon: "dashboard",
+    label: "Dashboard",
+  },
+  {
+    title: "Organization",
+    href: "/dashboard/organization",
+    icon: "employee",
+    label: "organization",
+  },
+];
 
 function SideBar() {
   const path = usePathname();
@@ -145,7 +159,11 @@ function Header() {
       <nav className="h-14 flex items-center justify-between px-4">
         <div className="hidden lg:block">
           <Link href="/dashboard" target="_blank">
-            <div className="font-bold">NGOMS Dashboard</div>
+            <div className="font-bold">
+              <span className="inline bg-gradient-to-r from-[#F596D3]  to-[#D247BF] text-transparent bg-clip-text">
+                NeatNGO
+              </span>{" "}
+            </div>
           </Link>
         </div>
         <div className={cn("block lg:!hidden")}>

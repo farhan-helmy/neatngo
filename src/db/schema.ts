@@ -1,3 +1,4 @@
+import { InferResultType } from "@/helper";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import {
@@ -99,6 +100,7 @@ export const memberships = pgTable("memberships", {
   isPaid: boolean("is_paid").default(false),
   membershipStart: date("membership_start_date"),
   membershipExpiry: date("membership_expiry"),
+  isActive: boolean("is_active").default(true),
   // Standard fields
   icNumber: text("ic_number"),
   phone: text("phone"),
@@ -283,3 +285,8 @@ export const donationsRelations = relations(donations, ({ one }) => ({
 
 
 export type SelectEvent = typeof events.$inferSelect;
+export type SelectMemberships = typeof memberships.$inferSelect;
+
+export type SelectUsers = typeof users.$inferSelect;
+
+export type MembershipsWithUser = InferResultType<'memberships', { user: true }>
