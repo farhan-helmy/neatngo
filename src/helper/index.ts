@@ -78,7 +78,7 @@ export function cleanEventType({ eventType }: { eventType: string }) {
   const eventTypeLabels: Record<EventType, string> = {
     WORKSHOP: "Workshop",
     FUNDRAISER: "Fundraiser",
-    VOLUNTEER_ACTIVITY: "Volunteer Activity",
+    VOLUNTEERING: "Volunteering",
     MEETING: "Meeting",
     OTHER: "Other",
   };
