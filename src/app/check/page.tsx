@@ -8,8 +8,6 @@ export default async function checkPage() {
   const checkUser = async () => {
     const { sessionClaims } = auth();
 
-    console.log(sessionClaims);
-
     if (!sessionClaims) return;
     const res = await db
       .select()

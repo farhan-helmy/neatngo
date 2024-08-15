@@ -26,8 +26,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { addMember } from "./actions";
+import { addMember } from "../_lib/actions";
 import { useParams } from "next/navigation";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   fullName: z
@@ -87,7 +88,6 @@ export function AddMemberForm() {
     if (response.error) {
       toast.error(response.error);
     } else if (response.data) {
-      console.log(response.data);
       toast.success("Member added successfully");
       setOpen(false);
     }
@@ -95,9 +95,9 @@ export function AddMemberForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusCircleIcon className="w-6 h-6 mr-2" />
-          Add Members
+        <Button variant="outline" size="sm">
+          <PlusIcon className="mr-2 size-4" aria-hidden="true" />
+          New Member
         </Button>
       </DialogTrigger>
       <DialogContent>

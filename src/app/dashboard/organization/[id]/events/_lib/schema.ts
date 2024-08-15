@@ -1,5 +1,24 @@
-import { eventTypeEnum } from "@/db/schema";
+import { events, eventTypeEnum } from "@/db/schema";
 import { z } from "zod"
+
+export const searchParamsSchema = z.object({
+    page: z.coerce.number().default(1),
+    per_page: z.coerce.number().default(10),
+    sort: z.string().optional(),
+    name: z.string().optional(),
+    eventType: z.enum(events.eventType.enumValues).optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    location: z.string().optional(),
+    from: z.string().optional(),
+    to: z.string().optional(),
+    operator: z.enum(["and", "or"]).optional(),
+    orgId: z.string().optional(),
+})
+
+export const getEventsSchema = searchParamsSchema
+
+export type GetEventsSchema = z.infer<typeof getEventsSchema>
 
 export const eventFormSchema = z
     .object({
