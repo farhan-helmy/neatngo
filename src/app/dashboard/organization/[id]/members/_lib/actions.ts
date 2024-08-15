@@ -10,6 +10,8 @@ import { z } from "zod";
 import { filterColumn } from "@/lib/filter-column";
 import { DrizzleWhere } from "@/types";
 import { GetMembersSchema } from "./schema";
+import { UpdateUserSchema } from "./validations";
+import { getErrorMessage } from "@/lib/handle-error";
 
 
 
@@ -55,6 +57,7 @@ export async function getMembers(input: GetMembersSchema) {
         .select({
           id: users.id,
           email: users.email,
+          phone: memberships.phone,
           firstName: users.firstName,
           lastName: users.lastName,
           subscriptionTier: users.subscriptionTier,
@@ -162,4 +165,36 @@ export async function addMember({
     revalidatePath(`/dashboard/organization/${organizationId}/members`);
     return res;
   });
+}
+
+export async function updateUser(input: UpdateUserSchema & { id: string, orgId: string }) {
+  noStore()
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(users)
+        .set({
+          email: input.email,
+        })
+        .where(eq(users.id, input.id))
+
+      await tx.update(memberships)
+        .set({
+          phone: input.phone
+        })
+        .where(eq(memberships.userId, input.id))
+    })
+
+    revalidatePath(`/dashboard/organization/${input.orgId}/members`)
+
+    return {
+      data: null,
+      error: null,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: getErrorMessage(err),
+    }
+  }
 }

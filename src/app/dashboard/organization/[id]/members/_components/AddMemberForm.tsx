@@ -26,7 +26,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { addMember } from "../actions";
+import { addMember } from "../_lib/actions";
 import { useParams } from "next/navigation";
 import { PlusIcon } from "@radix-ui/react-icons";
 

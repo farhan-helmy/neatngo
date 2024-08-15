@@ -6,16 +6,16 @@ import { type Table } from "@tanstack/react-table";
 
 import { exportTableToCSV } from "@/lib/export";
 import { Button } from "@/components/ui/button";
-import { AddMemberForm } from "./AddMemberForm";
-import { UserResult } from "../_lib/type";
+import { EventResults } from "../_lib/type";
+import { AddEventForm } from "./AddEventForm";
 
-interface MembersTableToolbarActionsProps {
-  table: Table<UserResult>;
+interface EventsTableToolbarActionsProps {
+  table: Table<EventResults>;
 }
 
-export function MembersTableToolbarActions({
+export function EventsTableToolbarActions({
   table,
-}: MembersTableToolbarActionsProps) {
+}: EventsTableToolbarActionsProps) {
   return (
     <div className="flex items-center gap-2">
       {/* {table.getFilteredSelectedRowModel().rows.length > 0 ? (
@@ -26,7 +26,7 @@ export function MembersTableToolbarActions({
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
       ) : null} */}
-      <AddMemberForm />
+      <AddEventForm />
       <Button
         variant="outline"
         size="sm"

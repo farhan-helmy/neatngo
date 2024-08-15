@@ -20,13 +20,13 @@ import {
 } from "@/components/ui/form";
 import { useLoading } from "@/hooks/useLoading";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, PlusCircleIcon } from "lucide-react";
+import { CalendarIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { addEvent } from "./actions";
+import { addEvent } from "../_lib/actions";
 import { useParams } from "next/navigation";
 import { eventTypeEnum } from "@/db/schema";
 import { Calendar } from "@/components/ui/calendar";
@@ -45,7 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { eventFormSchema } from "./event.schema";
+import { eventFormSchema } from "../_lib/schema";
 
 export function AddEventForm() {
   const { isLoading, withLoading } = useLoading();
@@ -54,7 +54,7 @@ export function AddEventForm() {
   const eventTypeLabels = {
     WORKSHOP: "Workshop",
     FUNDRAISER: "Fundraiser",
-    VOLUNTEER_ACTIVITY: "Volunteer Activity",
+    VOLUNTEERING: "Volunteering",
     MEETING: "Meeting",
     OTHER: "Other",
   };
@@ -87,6 +87,7 @@ export function AddEventForm() {
       if (response.error) {
         toast.error(response.error);
       } else if (response.data) {
+        form.reset();
         toast.success("Event added successfully");
         setOpen(false);
       }
@@ -96,9 +97,9 @@ export function AddEventForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <PlusCircleIcon className="w-6 h-6 mr-2" />
-          Add Event
+        <Button variant="outline" size="sm">
+          <PlusIcon className="mr-2 size-4" aria-hidden="true" />
+          New Event
         </Button>
       </DialogTrigger>
       <DialogContent>

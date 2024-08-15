@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/layout/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import PlausibleProvider from "next-plausible";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,6 +54,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <NextTopLoader color="#808080" />
               {children}
               <Toaster />
             </ThemeProvider>

@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { users, UserWithMemberships, type SelectUsers } from "@/db/schema";
+import {
+  events,
+  users,
+  UserWithMemberships,
+  type SelectUsers,
+} from "@/db/schema";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { type ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
@@ -24,15 +29,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { UpdateMemberSheet } from "./EditMemberSheet";
-import { UserResult } from "../_lib/type";
+// import { UpdateMemberSheet } from "./UpdateMemberSheet";
+import { EventResults } from "../_lib/type";
+import { formatEventType, getEventTypeIcon } from "../_lib/utils";
+import { MapPinIcon, MapPinnedIcon, MapPinOffIcon } from "lucide-react";
+import { UpdateEventSheet } from "./EditEventSheet";
 
 // import { updateTask } from "../_lib/actions";
 // import { getPriorityIcon, getStatusIcon } from "../_lib/utils";
 // import { DeleteTasksDialog } from "./delete-tasks-dialog";
 // import { UpdateTaskSheet } from "./update-task-sheet";
 
-export function getColumns(): ColumnDef<UserResult>[] {
+export function getColumns(): ColumnDef<EventResults>[] {
   return [
     {
       id: "select",
@@ -59,44 +67,92 @@ export function getColumns(): ColumnDef<UserResult>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "email",
+      accessorKey: "name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Email" />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
-      cell: ({ row }) => <div>{row.getValue("email")}</div>,
+      cell: ({ row }) => <div>{row.getValue("name")}</div>,
       enableSorting: true,
       enableHiding: false,
     },
     {
-      accessorKey: "phone",
+      accessorKey: "location",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Phone" />
+        <DataTableColumnHeader column={column} title="Location" />
       ),
-      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+      cell: ({ row }) => (
+        <div className="flex w-[6.25rem] items-center">
+          <MapPinnedIcon
+            className="mr-2 size-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+          {row.getValue("location")}
+        </div>
+      ),
       enableSorting: true,
       enableHiding: false,
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "eventType",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Created At" />
+        <DataTableColumnHeader column={column} title="Event Type" />
+      ),
+      cell: ({ row }) => {
+        const eventType = events.eventType.enumValues.find(
+          (eventType) => eventType === row.getValue("eventType")
+        );
+
+        if (!eventType) {
+          return null;
+        }
+
+        const Icon = getEventTypeIcon(eventType);
+
+        return (
+          <div className="flex w-[6.25rem] items-center">
+            <Icon
+              className="mr-2 size-4 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <span>{formatEventType(eventType)}</span>
+          </div>
+        );
+      },
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "startDate",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Start Date" />
       ),
       cell: ({ cell }) => formatDate(cell.getValue() as Date),
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "endDate",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="End Date" />
+      ),
+      cell: ({ cell }) => formatDate(cell.getValue() as Date),
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       id: "actions",
       cell: function Cell({ row }) {
-        const [showUpdateUserSheet, setShowUpdateUserSheet] =
+        const [showUpdateUserSheet, setShowEditEventSheet] =
           React.useState(false);
         const [showDeleteTaskDialog, setShowDeleteTaskDialog] =
           React.useState(false);
 
         return (
           <>
-            <UpdateMemberSheet
-              user={row.original}
+            <UpdateEventSheet
+              event={row.original}
               open={showUpdateUserSheet}
-              onOpenChange={setShowUpdateUserSheet}
+              onOpenChange={setShowEditEventSheet}
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -109,7 +165,7 @@ export function getColumns(): ColumnDef<UserResult>[] {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onSelect={() => setShowUpdateUserSheet(true)}>
+                <DropdownMenuItem onSelect={() => setShowEditEventSheet(true)}>
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem

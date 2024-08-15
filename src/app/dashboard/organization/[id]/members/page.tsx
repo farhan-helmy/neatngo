@@ -1,12 +1,12 @@
 import { Layout, LayoutBody, LayoutHeader } from "@/components/custom/layout";
 import { MembersTable } from "./_components/MembersTable";
-import { getMembers } from "./actions";
+import { getMembers } from "./_lib/actions";
 import NeatCrumb from "@/components/custom/NeatCrumb";
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { searchParamsSchema } from "./schema";
+import { searchParamsSchema } from "./_lib/schema";
 
 export default async function OrganizationMemberPage({
   params,
@@ -53,15 +53,6 @@ export default async function OrganizationMemberPage({
             />
           }
         ></React.Suspense>
-        {/* <MembersTable
-          members={members.map((member) => ({
-            id: member.id || "",
-            name: member.fullName || "",
-            email: member.email || "",
-            phone: member.phoneNumber || "",
-          }))}
-          organizationId={params.id}
-        /> */}
 
         <MembersTable membersPromise={membersPromise} />
       </LayoutBody>

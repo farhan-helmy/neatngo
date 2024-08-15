@@ -2,24 +2,24 @@
 "use memo";
 
 import * as React from "react";
-import { type SelectUsers } from "@/db/schema";
+import { SelectEvent } from "@/db/schema";
 import { type DataTableFilterField } from "@/types";
 
 import { useDataTable } from "@/hooks/useDataTable";
 import { DataTableAdvancedToolbar } from "@/components/data-table/advanced/data-table-advanced-toolbar";
 import { DataTable } from "@/components/data-table/data-table";
 
-import { getColumns } from "./MembersTableColumns";
+import { getColumns } from "./EventsTableColumns";
 
-import { getMembers } from "../_lib/actions";
-import { MembersTableToolbarActions } from "./MembersTableToolbarActions";
+import { getEvents } from "../_lib/actions";
+import { EventsTableToolbarActions } from "./EventsTableToolbarActions";
 
-interface MembersTableProps {
-  membersPromise: ReturnType<typeof getMembers>;
+interface EventsTableProps {
+  eventsPromise: ReturnType<typeof getEvents>;
 }
 
-export function MembersTable({ membersPromise }: MembersTableProps) {
-  const { data, pageCount } = React.use(membersPromise);
+export function EventsTable({ eventsPromise }: EventsTableProps) {
+  const { data, pageCount } = React.use(eventsPromise);
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo(() => getColumns(), []);
@@ -35,11 +35,31 @@ export function MembersTable({ membersPromise }: MembersTableProps) {
    * @prop {React.ReactNode} [icon] - An optional icon to display next to the label.
    * @prop {boolean} [withCount] - An optional boolean to display the count of the filter option.
    */
-  const filterFields: DataTableFilterField<SelectUsers>[] = [
+  const filterFields: DataTableFilterField<SelectEvent>[] = [
     {
-      label: "Email",
-      value: "email",
-      placeholder: "Filter email...",
+      label: "Name",
+      value: "name",
+      placeholder: "Filter name...",
+    },
+    {
+      label: "Start Date",
+      value: "startDate",
+      placeholder: "Filter start date...",
+    },
+    {
+      label: "End Date",
+      value: "endDate",
+      placeholder: "Filter end date...",
+    },
+    {
+      label: "Event Type",
+      value: "eventType",
+      placeholder: "Filter event type...",
+    },
+    {
+      label: "Location",
+      value: "location",
+      placeholder: "Filter location...",
     },
   ];
 
@@ -62,7 +82,7 @@ export function MembersTable({ membersPromise }: MembersTableProps) {
   return (
     <DataTable table={table}>
       <DataTableAdvancedToolbar table={table} filterFields={filterFields}>
-        <MembersTableToolbarActions table={table} />
+        <EventsTableToolbarActions table={table} />
       </DataTableAdvancedToolbar>
     </DataTable>
   );
