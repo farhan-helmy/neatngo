@@ -16,9 +16,14 @@ export default async function ViewOrganizationPage({
     },
   });
 
+  const orgName = await db
+    .select({ name: organizations.name })
+    .from(organizations)
+    .where(eq(organizations.id, params.id));
+
   return (
     <Layout>
-      <LayoutHeader></LayoutHeader>
+      <LayoutHeader className="">{orgName[0].name} Home</LayoutHeader>
       <LayoutBody>
         <OrganizationPageContent members={orgMembers} />
       </LayoutBody>

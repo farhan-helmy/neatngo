@@ -290,3 +290,7 @@ export type SelectMemberships = typeof memberships.$inferSelect;
 export type SelectUsers = typeof users.$inferSelect;
 
 export type MembershipsWithUser = InferResultType<'memberships', { user: true }>
+
+export type UserWithMemberships = InferResultType<'users', { memberships: true }>
+
+export type OrganizationWithMemberships = InferResultType<'organizations', { memberships: true }>

@@ -1,36 +1,102 @@
 "use server";
 
 import { db } from "@/db";
-import { memberships, users } from "@/db/schema";
+import { unstable_noStore as noStore } from "next/cache"
+import { memberships, organizations, SelectUsers, users } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
-import { eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, lte, or, SQL, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { filterColumn } from "@/lib/filter-column";
+import { DrizzleWhere } from "@/types";
+import { GetMembersSchema } from "./schema";
 
-export async function getMembers({
-  organizationId,
-}: {
-  organizationId: string;
-}) {
-  // const res = await db.query.memberships.findMany({
-  //     where: eq(memberships.organizationId, organizationId),
-  //     with: {
-  //         user: true
-  //     }
-  // })
 
-  const res = await db
-    .select({
-      id: users.id,
-      fullName: users.firstName,
-      email: users.email,
-      phoneNumber: memberships.phone,
+
+export async function getMembers(input: GetMembersSchema) {
+  noStore();
+  const { page, per_page, sort, email, operator, from, to, orgId } =
+    input
+
+  try {
+    // Offset to paginate the results
+    const offset = (page - 1) * per_page
+    // Column and order to sort by
+    // Spliting the sort string by "." to get the column and order
+    // Example: "title.desc" => ["title", "desc"]
+    const [column, order] = (sort?.split(".").filter(Boolean) ?? [
+      "createdAt",
+      "desc",
+    ]) as [keyof SelectUsers | undefined, "asc" | "desc" | undefined]
+
+    // Convert the date strings to date objects
+    const fromDay = from ? sql`to_date(${from}, 'yyyy-mm-dd')` : undefined
+    const toDay = to ? sql`to_date(${to}, 'yyy-mm-dd')` : undefined
+
+    const expressions: (SQL<unknown> | undefined)[] = [
+      email
+        ? filterColumn({
+          column: users.email,
+          value: email,
+        })
+        : undefined,
+      // Filter by createdAt
+      fromDay && toDay
+        ? and(gte(users.createdAt, fromDay), lte(users.createdAt, toDay))
+        : undefined,
+      eq(memberships.organizationId, orgId!)
+    ]
+
+    const where: DrizzleWhere<SelectUsers> =
+      !operator || operator === "and" ? and(...expressions) : or(...expressions)
+
+    const { data, total } = await db.transaction(async (tx) => {
+      const data = await tx
+        .select({
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          subscriptionTier: users.subscriptionTier,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt,
+        })
+        .from(users)
+        .limit(per_page)
+        .offset(offset)
+        .where(where)
+        .orderBy(
+          column && column in users
+            ? order === "asc"
+              ? asc(users[column])
+              : desc(users[column])
+            : desc(users.id)
+        )
+        .leftJoin(memberships, eq(users.id, memberships.userId))
+        .leftJoin(organizations, eq(memberships.organizationId, organizations.id))
+
+
+      const total = await tx
+        .select({
+          count: count(),
+        })
+        .from(memberships)
+        .where(where)
+        .execute()
+        .then((res) => res[0]?.count ?? 0)
+
+      return {
+        data,
+        total,
+      }
     })
-    .from(memberships)
-    .where(eq(memberships.organizationId, organizationId))
-    .leftJoin(users, eq(users.id, memberships.userId));
 
-  console.log(res);
-  return res;
+    const pageCount = Math.ceil(total / per_page)
+    return { data, pageCount }
+  } catch (err) {
+    return { data: [], pageCount: 0 }
+  }
+
 }
 
 export async function addMember({

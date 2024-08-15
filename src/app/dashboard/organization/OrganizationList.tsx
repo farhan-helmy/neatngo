@@ -49,20 +49,6 @@ export function OrganizationList({ id, name }: { id: string; name: string }) {
           </button>
         </div>
       </div>
-      <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-        <div className="flex justify-between gap-x-4 py-3">
-          {/* <dt className="text-gray-500">Created by</dt>
-          <dd className="text-gray-700">{}</dd> */}
-        </div>
-        {/* <div className="flex justify-between gap-x-4 py-3">
-              <dt className="text-gray-500">Amount</dt>
-              <dd className="flex items-start gap-x-2">
-                <div className="font-medium text-gray-900">
-                  {client.lastInvoice.amount}
-                </div>
-              </dd>
-            </div> */}
-      </dl>
     </div>
   );
 }

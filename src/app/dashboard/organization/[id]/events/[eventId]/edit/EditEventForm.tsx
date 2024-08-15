@@ -43,7 +43,7 @@ import { updateEvent } from "./actions";
 import { useLoading } from "@/hooks/useLoading";
 import { cleanEventType } from "@/helper";
 import { editEventFormSchema, eventFormSchema } from "../../event.schema";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 
 export function EditEventForm({ event }: { event: SelectEvent }) {
   const params = useParams();
@@ -53,6 +53,7 @@ export function EditEventForm({ event }: { event: SelectEvent }) {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm({
     resolver: zodResolver(editEventFormSchema),
     defaultValues: {
@@ -65,8 +66,6 @@ export function EditEventForm({ event }: { event: SelectEvent }) {
       location: event?.location || "",
     },
   });
-
-  console.log(event);
 
   const onSubmit = withLoading(
     async (values: z.infer<typeof editEventFormSchema>) => {
@@ -223,13 +222,12 @@ export function EditEventForm({ event }: { event: SelectEvent }) {
                     <div className="grid gap-3">
                       <Label htmlFor="eventType">Event Type</Label>
                       <Select
-                        {...register("eventType")}
                         defaultValue={event.eventType}
+                        onValueChange={(val) =>
+                          setValue("eventType", val as EventType)
+                        }
                       >
-                        <SelectTrigger
-                          id="eventType"
-                          aria-label="Select event type"
-                        >
+                        <SelectTrigger>
                           <SelectValue placeholder="Select event type" />
                         </SelectTrigger>
                         <SelectContent>

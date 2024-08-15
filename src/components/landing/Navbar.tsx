@@ -13,7 +13,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { LayoutDashboard, Menu, UserRound } from "lucide-react";
 import { ToggleTheme } from "@/components/layout/toggle-theme";
@@ -57,9 +56,7 @@ export const Navbar = () => {
                 <Menu
                   className="flex md:hidden h-5 w-5"
                   onClick={() => setIsOpen(true)}
-                >
-                  <span className="sr-only">Menu Icon</span>
-                </Menu>
+                />
               </SheetTrigger>
 
               <SheetContent side={"left"}>
@@ -83,7 +80,6 @@ export const Navbar = () => {
             </Sheet>
           </span>
 
-          {/* desktop */}
           <nav className="hidden md:flex gap-2">
             {routeList.map((route: RouteProps, i) => (
               <a
@@ -109,9 +105,7 @@ export const Navbar = () => {
                   aria-label="Sign In"
                   className="hover:cursor-pointer"
                 >
-                  <a aria-label="Sign In">
-                    <UserRound className="size-5" />
-                  </a>
+                  <UserRound className="size-5" />
                 </Button>
               </SignInButton>
             </SignedOut>

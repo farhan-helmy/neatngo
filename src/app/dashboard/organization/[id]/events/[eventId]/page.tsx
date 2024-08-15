@@ -26,6 +26,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { cleanEventType } from "@/helper";
+import NeatCrumb from "@/components/custom/NeatCrumb";
 
 export default async function ViewEventPage({
   params,
@@ -57,27 +58,22 @@ export default async function ViewEventPage({
   return (
     <Layout>
       <LayoutHeader className="flex justify-between">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/dashboard/organization/${params.id}`}>
-                Organization
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink
-                href={`/dashboard/organization/${params.id}/events`}
-              >
-                Events
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{event.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <NeatCrumb
+          items={[
+            {
+              label: "Organization",
+              href: `/dashboard/organization/${params.id}`,
+            },
+            {
+              label: "Event",
+              href: `/dashboard/organization/${params.id}/events`,
+            },
+            {
+              label: `${event.name}`,
+              href: `/dashboard/organization/${params.id}/events/${params.eventId}  `,
+            },
+          ]}
+        />
       </LayoutHeader>
       <LayoutBody>
         <div className="grid  flex-1 auto-rows-max gap-4">
