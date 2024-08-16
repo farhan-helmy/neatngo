@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { EventResults } from "../_lib/type";
 import { AddEventForm } from "./AddEventForm";
 import { DeleteMemberDialog } from "../../members/_components/DeleteMemberDialog";
+import { DeleteEventDialog } from "./DeleteEventDialog";
 
 interface EventsTableToolbarActionsProps {
   table: Table<EventResults>;
@@ -19,14 +20,14 @@ export function EventsTableToolbarActions({
 }: EventsTableToolbarActionsProps) {
   return (
     <div className="flex items-center gap-2">
-      {/* {table.getFilteredSelectedRowModel().rows.length > 0 ? (
-        <DeleteMemberDialog
-          users={table
+      {table.getFilteredSelectedRowModel().rows.length > 0 ? (
+        <DeleteEventDialog
+          events={table
             .getFilteredSelectedRowModel()
             .rows.map((row) => row.original)}
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
-      ) : null} */}
+      ) : null}
       <AddEventForm />
       <Button
         variant="outline"
