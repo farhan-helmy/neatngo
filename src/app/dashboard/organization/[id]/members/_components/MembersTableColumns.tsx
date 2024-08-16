@@ -26,6 +26,7 @@ import {
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { UpdateMemberSheet } from "./EditMemberSheet";
 import { UserResult } from "../_lib/type";
+import { DeleteMemberDialog } from "./DeleteMemberDialog";
 
 // import { updateTask } from "../_lib/actions";
 // import { getPriorityIcon, getStatusIcon } from "../_lib/utils";
@@ -88,7 +89,7 @@ export function getColumns(): ColumnDef<UserResult>[] {
       cell: function Cell({ row }) {
         const [showUpdateUserSheet, setShowUpdateUserSheet] =
           React.useState(false);
-        const [showDeleteTaskDialog, setShowDeleteTaskDialog] =
+        const [showDeleteMemberDialog, setShowDeleteMemberDialog] =
           React.useState(false);
 
         return (
@@ -97,6 +98,15 @@ export function getColumns(): ColumnDef<UserResult>[] {
               user={row.original}
               open={showUpdateUserSheet}
               onOpenChange={setShowUpdateUserSheet}
+            />
+            <DeleteMemberDialog
+              users={[row.original]}
+              open={showDeleteMemberDialog}
+              onOpenChange={setShowDeleteMemberDialog}
+              onSuccess={() => {
+                row.toggleSelected(false);
+              }}
+              showTrigger={false}
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -113,7 +123,7 @@ export function getColumns(): ColumnDef<UserResult>[] {
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onSelect={() => setShowDeleteTaskDialog(true)}
+                  onSelect={() => setShowDeleteMemberDialog(true)}
                 >
                   Delete
                 </DropdownMenuItem>

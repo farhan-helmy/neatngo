@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { unstable_noStore as noStore } from "next/cache"
 import { memberships, organizations, SelectUsers, users } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
-import { and, asc, count, desc, eq, gte, lte, or, SQL, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, lte, or, SQL, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { filterColumn } from "@/lib/filter-column";
@@ -197,4 +197,20 @@ export async function updateUser(input: UpdateUserSchema & { id: string, orgId: 
       error: getErrorMessage(err),
     }
   }
+}
+
+export async function deleteMember({ userId, orgId }: { userId: string[], orgId: string }) {
+  return handleApiRequest(async () => {
+    await db.transaction(async (tx) => {
+      await tx.delete(memberships).where(inArray(memberships.userId, userId))
+      await tx.delete(users).where(inArray(users.id, userId))
+
+    })
+
+    revalidatePath(`/dashboard/organization/${orgId}/members`)
+    return {
+      data: null,
+      error: null,
+    }
+  })
 }

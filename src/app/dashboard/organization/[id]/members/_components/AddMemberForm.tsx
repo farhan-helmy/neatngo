@@ -95,7 +95,7 @@ export function AddMemberForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button size="sm">
           <PlusIcon className="mr-2 size-4" aria-hidden="true" />
           New Member
         </Button>
@@ -115,7 +115,7 @@ export function AddMemberForm() {
                   <FormControl>
                     <Input placeholder="Muhd Farhan" {...field} />
                   </FormControl>
-                  <FormDescription>User&apos;s full name.</FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -129,7 +129,7 @@ export function AddMemberForm() {
                   <FormControl>
                     <Input placeholder="farhan@example.com" {...field} />
                   </FormControl>
-                  <FormDescription>User&apos;s email.</FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -143,7 +143,7 @@ export function AddMemberForm() {
                   <FormControl>
                     <Input placeholder="012345678" {...field} />
                   </FormControl>
-                  <FormDescription>User&apos;s phone number.</FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}

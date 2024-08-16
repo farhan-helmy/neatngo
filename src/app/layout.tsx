@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   title: "NeatNGO - Efficient NGO Management System",
   description:
     "Ditch excel sheets and streamline your NGO operations with our comprehensive management solution.",
+  keywords:
+    "ngo, management, system, software, organization, charity, non-profit, excel, ditch excel, streamline, operations, solution, malaysia, ngo malaysia, malaysia product, malaysia software, malaysia ngo, malaysia charity, malaysia non-profit, malaysia excel, malaysia ditch excel, malaysia streamline, malaysia operations, malaysia solution",
   openGraph: {
     title: "NeatNGO - Efficient NGO Management System",
     description:
