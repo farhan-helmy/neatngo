@@ -95,7 +95,8 @@ export default function PrivacyPolicyPage() {
           <p className="text-gray-600">
             We may update our Privacy Policy from time to time. We will notify
             you of any changes by posting the new Privacy Policy on this page
-            and updating the "effective date" at the top of this Privacy Policy.
+            and updating the &quot;effective date&quot; at the top of this
+            Privacy Policy.
           </p>
         </section>
 
@@ -110,7 +111,7 @@ export default function PrivacyPolicyPage() {
           <p className="mt-2 text-gray-600">
             Email: privacy@neatngo.com
             <br />
-            Address: [Your Malaysian Address]
+            Address: coming soon
           </p>
         </section>
       </div>
