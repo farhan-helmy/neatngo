@@ -34,6 +34,7 @@ import { EventResults } from "../_lib/type";
 import { formatEventType, getEventTypeIcon } from "../_lib/utils";
 import { MapPinIcon, MapPinnedIcon, MapPinOffIcon } from "lucide-react";
 import { UpdateEventSheet } from "./EditEventSheet";
+import { DeleteEventDialog } from "./DeleteEventDialog";
 
 // import { updateTask } from "../_lib/actions";
 // import { getPriorityIcon, getStatusIcon } from "../_lib/utils";
@@ -144,7 +145,7 @@ export function getColumns(): ColumnDef<EventResults>[] {
       cell: function Cell({ row }) {
         const [showUpdateUserSheet, setShowEditEventSheet] =
           React.useState(false);
-        const [showDeleteTaskDialog, setShowDeleteTaskDialog] =
+        const [showDeleteEventDialog, setShowDeleteEventDialog] =
           React.useState(false);
 
         return (
@@ -153,6 +154,13 @@ export function getColumns(): ColumnDef<EventResults>[] {
               event={row.original}
               open={showUpdateUserSheet}
               onOpenChange={setShowEditEventSheet}
+            />
+            <DeleteEventDialog
+              events={[row.original]}
+              showTrigger={false}
+              onSuccess={() => {}}
+              open={showDeleteEventDialog}
+              onOpenChange={setShowDeleteEventDialog}
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -169,7 +177,7 @@ export function getColumns(): ColumnDef<EventResults>[] {
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onSelect={() => setShowDeleteTaskDialog(true)}
+                  onSelect={() => setShowDeleteEventDialog(true)}
                 >
                   Delete
                 </DropdownMenuItem>

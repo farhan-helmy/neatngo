@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { events, eventTypeEnum, organizations, SelectEvent, users } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
-import { and, asc, count, desc, eq, gte, lte, or, SQL, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, lte, or, SQL, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { unstable_noStore as noStore } from "next/cache"
 import { GetEventsSchema } from "./schema";
@@ -196,6 +196,23 @@ export async function updateEvent(input: UpdateEventSchema & { id: string; orgId
       return res;
     } catch (error) {
       console.error("Error updating event:", error);
+      throw error;
+    }
+  });
+}
+
+export async function deleteEvent({ eventId, orgId }: { eventId: string[], orgId: string }) {
+  return handleApiRequest(async () => {
+    try {
+      const res = await db.transaction(async (tx) => {
+        await tx.delete(events).where(inArray(events.id, eventId));
+      });
+
+      revalidatePath(`/dashboard/organization/${orgId}/events`);
+
+      return res;
+    } catch (error) {
+      console.error("Error deleting event:", error);
       throw error;
     }
   });
