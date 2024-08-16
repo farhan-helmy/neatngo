@@ -78,6 +78,7 @@ export const organizations = pgTable("organizations", {
   name: text("name").notNull(),
   description: text("description"),
   rosRegistrationNumber: text("ros_registration_number").notNull(),
+  isPublic: boolean("is_public").default(false).notNull(),
   createdById: text("created_by_id")
     .notNull()
     .references(() => users.id),
@@ -283,14 +284,22 @@ export const donationsRelations = relations(donations, ({ one }) => ({
   }),
 }));
 
-
 export type SelectEvent = typeof events.$inferSelect;
 export type SelectMemberships = typeof memberships.$inferSelect;
 
 export type SelectUsers = typeof users.$inferSelect;
 
-export type MembershipsWithUser = InferResultType<'memberships', { user: true }>
+export type MembershipsWithUser = InferResultType<
+  "memberships",
+  { user: true }
+>;
 
-export type UserWithMemberships = InferResultType<'users', { memberships: true }>
+export type UserWithMemberships = InferResultType<
+  "users",
+  { memberships: true }
+>;
 
-export type OrganizationWithMemberships = InferResultType<'organizations', { memberships: true }>
+export type OrganizationWithMemberships = InferResultType<
+  "organizations",
+  { memberships: true }
+>;
