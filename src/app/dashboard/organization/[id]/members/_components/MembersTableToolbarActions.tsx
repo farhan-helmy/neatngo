@@ -8,6 +8,7 @@ import { exportTableToCSV } from "@/lib/export";
 import { Button } from "@/components/ui/button";
 import { AddMemberForm } from "./AddMemberForm";
 import { UserResult } from "../_lib/type";
+import { DeleteMemberDialog } from "./DeleteMemberDialog";
 
 interface MembersTableToolbarActionsProps {
   table: Table<UserResult>;
@@ -18,14 +19,14 @@ export function MembersTableToolbarActions({
 }: MembersTableToolbarActionsProps) {
   return (
     <div className="flex items-center gap-2">
-      {/* {table.getFilteredSelectedRowModel().rows.length > 0 ? (
-        <DeleteTasksDialog
-          tasks={table
+      {table.getFilteredSelectedRowModel().rows.length > 0 ? (
+        <DeleteMemberDialog
+          users={table
             .getFilteredSelectedRowModel()
             .rows.map((row) => row.original)}
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
-      ) : null} */}
+      ) : null}
       <AddMemberForm />
       <Button
         variant="outline"
