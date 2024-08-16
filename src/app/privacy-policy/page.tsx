@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar } from "@/components/landing/Navbar";
 import { Shield, Lock, UserCheck, RefreshCw, Mail } from 'lucide-react';
 
-const FeatureCard = ({ icon, title, description }) => (
+const FeatureCard = ({ icon, title, description }: { icon: JSX.Element, title: string, description: string }) => (
   <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
     <div className="flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full mb-4">
       {icon}
