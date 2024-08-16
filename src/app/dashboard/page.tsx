@@ -4,7 +4,9 @@ import { formatDate } from "@/helper";
 import { useUser } from "@clerk/nextjs";
 
 export default function DashboardPage() {
-  if (process.env.NEXT_PUBLIC_ENVIRONMENT === "dev") {
+  const { user } = useUser();
+
+  if (!user || process.env.ENVIRONMENT === "dev") {
     return (
       <Layout>
         <LayoutHeader>Welcome back!</LayoutHeader>
@@ -12,19 +14,12 @@ export default function DashboardPage() {
       </Layout>
     );
   }
-  const { user } = useUser();
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <Layout>
       <LayoutHeader>Welcome back!</LayoutHeader>
       <LayoutBody>
-        {/* {isDemo()
-          ? "You are using a demo account."
-          : `Last signed in at ${formatDate(user.lastSignInAt!)}`} */}
+        Last signed in at {formatDate(user.lastSignInAt!)}
       </LayoutBody>
     </Layout>
   );
