@@ -172,6 +172,11 @@ function Header() {
 
         <div className="flex items-center gap-2">
           <ToggleTheme />
+          {process.env.NEXT_PUBLIC_ENVIRONMENT === "dev" && (
+            <Link href="/">
+              <Button>Back to Home</Button>
+            </Link>
+          )}
           <UserButton
             afterSignOutUrl="/"
             appearance={{

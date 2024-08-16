@@ -6,7 +6,6 @@ import { memberships, organizations, SelectUsers, users } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
 import { and, asc, count, desc, eq, gte, inArray, lte, or, SQL, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { filterColumn } from "@/lib/filter-column";
 import { DrizzleWhere } from "@/types";
 import { GetMembersSchema } from "./schema";

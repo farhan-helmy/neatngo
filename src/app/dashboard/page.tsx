@@ -6,8 +6,13 @@ import { useUser } from "@clerk/nextjs";
 export default function DashboardPage() {
   const { user } = useUser();
 
-  if (!user) {
-    return null;
+  if (!user || process.env.ENVIRONMENT === "dev") {
+    return (
+      <Layout>
+        <LayoutHeader>Welcome back!</LayoutHeader>
+        <LayoutBody>You are using a demo account.</LayoutBody>
+      </Layout>
+    );
   }
 
   return (

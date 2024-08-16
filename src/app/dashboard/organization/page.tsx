@@ -10,11 +10,16 @@ import { EmptyState } from "./EmptyState";
 export default async function OrganizationPage() {
   const { sessionClaims } = auth();
 
+  const email =
+    process.env.ENVIRONMENT === "dev"
+      ? process.env.DEMO_USER_EMAIL
+      : sessionClaims?.email;
+
   const org = await db.transaction(async (tx) => {
     const user = await tx
       .select({ id: users.id })
       .from(users)
-      .where(eq(users.email, sessionClaims?.email as string));
+      .where(eq(users.email, email as string));
 
     const organizationList = await tx
       .select({ id: organizations.id, name: organizations.name })
