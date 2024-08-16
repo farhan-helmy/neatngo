@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { LayoutDashboard, Menu, UserRound } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, UserRound } from "lucide-react";
 import { ToggleTheme } from "@/components/layout/toggle-theme";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
@@ -100,27 +100,35 @@ export const Navbar = () => {
           </nav>
 
           <div className="hidden md:flex gap-2">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button
-                  asChild
-                  size="sm"
-                  variant="ghost"
-                  aria-label="Sign In"
-                  className="hover:cursor-pointer"
-                >
-                  <UserRound className="size-5" />
-                </Button>
-              </SignInButton>
-            </SignedOut>
+            {process.env.NEXT_PUBLIC_ENVIRONMENT === "dev" ? (
+              <Link href={"dashboard"}>
+                <Button>Sign In Demo</Button>
+              </Link>
+            ) : (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button variant={"ghost"}>
+                      <LogIn className="size-5" />
+                    </Button>
+                  </SignInButton>
+                </SignedOut>
 
-            <SignedIn>
-              <Button asChild size="sm" variant="ghost" aria-label="Dashboard">
-                <Link aria-label="Dashboard" href="/dashboard">
-                  <LayoutDashboard className="size-5" />
-                </Link>
-              </Button>
-            </SignedIn>
+                <SignedIn>
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="ghost"
+                    aria-label="Dashboard"
+                  >
+                    <Link aria-label="Dashboard" href="/dashboard">
+                      <LayoutDashboard className="size-5" />
+                    </Link>
+                  </Button>
+                </SignedIn>
+              </>
+            )}
+
             <ToggleTheme />
           </div>
         </NavigationMenuList>
