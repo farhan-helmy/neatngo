@@ -14,19 +14,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { UpdateMemberSheet } from "./EditMemberSheet";
 import { UserResult } from "../_lib/type";
 import { DeleteMemberDialog } from "./DeleteMemberDialog";
+import { Switch } from "@/components/ui/switch";
+import { toggleMembershipStatus } from "../_lib/actions";
+import { useParams } from "next/navigation";
 
 // import { updateTask } from "../_lib/actions";
 // import { getPriorityIcon, getStatusIcon } from "../_lib/utils";
@@ -83,6 +79,29 @@ export function getColumns(): ColumnDef<UserResult>[] {
         <DataTableColumnHeader column={column} title="Created At" />
       ),
       cell: ({ cell }) => formatDate(cell.getValue() as Date),
+    },
+    {
+      accessorKey: "isActive",
+      header: () => <div>Status</div>,
+      cell: ({ row }) => (
+        <Switch
+          checked={row.getValue("isActive")}
+          onCheckedChange={async (value) => {
+            const res = await toggleMembershipStatus({
+              membershipId: row.original.membershipId!,
+              isActive: value,
+            });
+
+            if (res.error) {
+              toast.error(res.error);
+              return;
+            }
+            toast.success(`Member ${value ? "activated" : "deactivated"}`);
+          }}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
     },
     {
       id: "actions",

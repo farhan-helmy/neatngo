@@ -62,6 +62,8 @@ export async function getMembers(input: GetMembersSchema) {
           subscriptionTier: users.subscriptionTier,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt,
+          isActive: memberships.isActive,
+          membershipId: memberships.id
         })
         .from(users)
         .limit(per_page)
@@ -152,6 +154,7 @@ export async function addMember({
           organizationId,
           membershipStart: new Date().toISOString(),
           phone,
+          isActive: true,
         })
         .returning({
           membershipId: memberships.id,
@@ -207,6 +210,26 @@ export async function deleteMember({ userId, orgId }: { userId: string[], orgId:
     })
 
     revalidatePath(`/dashboard/organization/${orgId}/members`)
+    return {
+      data: null,
+      error: null,
+    }
+  })
+}
+
+export async function toggleMembershipStatus({ isActive, membershipId }: { isActive: boolean, membershipId: string }) {
+  noStore()
+  return handleApiRequest(async () => {
+    await db.transaction(async (tx) => {
+      await tx.update(memberships)
+        .set({
+          isActive
+        })
+        .where(eq(memberships.id, membershipId))
+    })
+
+    revalidatePath(`/dashboard/organization/${membershipId}/members`)
+
     return {
       data: null,
       error: null,
