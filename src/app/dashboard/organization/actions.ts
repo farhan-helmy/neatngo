@@ -6,7 +6,6 @@ import { handleApiRequest } from "@/helper";
 import { auth } from "@clerk/nextjs/server";
 import { count, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { toast } from "sonner";
 
 export async function deleteOrganization({ id }: { id: string }) {
   // need to handle foreign key constraint
@@ -15,13 +14,16 @@ export async function deleteOrganization({ id }: { id: string }) {
   revalidatePath("/");
 }
 
-
 export async function addOrganization({ name }: { name: string }) {
   return handleApiRequest(async () => {
     const { sessionClaims } = auth();
 
+    const email =
+      process.env.ENVIRONMENT === "dev"
+        ? process.env.DEMO_USER_EMAIL : sessionClaims?.email;
+
     const res = await db.transaction(async (tx) => {
-      const user = await tx.select({ id: users.id }).from(users).where(eq(users.email, sessionClaims?.email as string));
+      const user = await tx.select({ id: users.id }).from(users).where(eq(users.email, email as string));
 
       if (!user) {
         throw new Error("User not found");
