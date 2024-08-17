@@ -72,7 +72,7 @@ export async function PublicOrganizationsCaorusel() {
             </p>
             <ClientCarousel>
                 {publicOrganizations.map(({ id, name, description }) => (
-                    <CarouselItem key={id} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                    <CarouselItem key={id} className="px-3 md:basis-1/2 lg:basis-1/3">
                         <div className="p-1">
                             <Card className="bg-muted/50 relative mt-8 flex flex-col justify-center items-center">
                                 <CardHeader className="mt-8 flex justify-center items-center pb-2">
