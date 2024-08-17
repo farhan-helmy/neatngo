@@ -21,7 +21,7 @@ export const Hero = () => {
           <h2 className="inline">
             <span className="inline bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] text-transparent bg-clip-text">
               - NGO Management System{" "}
-              {process.env.NEXT_PUBLIC_ENV === "dev" && "DEMO VERSION"}
+              {process.env.NEXT_PUBLIC_ENVIRONMENT === "dev" && "DEMO VERSION"}
             </span>{" "}
           </h2>
         </main>
