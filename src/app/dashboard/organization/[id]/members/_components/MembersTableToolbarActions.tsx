@@ -6,7 +6,7 @@ import { type Table } from "@tanstack/react-table";
 
 import { exportTableToCSV } from "@/lib/export";
 import { Button } from "@/components/ui/button";
-import { AddMemberForm } from "./AddMemberForm";
+import { AddMemberForm } from "./AddMemberForm/AddMemberForm";
 import { UserResult } from "../_lib/type";
 import { DeleteMemberDialog } from "./DeleteMemberDialog";
 
