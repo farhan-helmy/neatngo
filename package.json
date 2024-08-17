@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio --port 9090",
@@ -66,16 +67,21 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.0.0",
     "@types/bun": "latest",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "drizzle-kit": "^0.22.8",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
+    "jsdom": "^24.1.1",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.5",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.5"
   },
   "module": "index.ts",
   "type": "module"
