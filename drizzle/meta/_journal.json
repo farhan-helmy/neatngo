@@ -15,6 +15,13 @@
       "when": 1723390100204,
       "tag": "0004_sweet_zodiak",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1723827264388,
+      "tag": "0005_add_is_public_into_organizations",
+      "breakpoints": true
     }
   ]
 }

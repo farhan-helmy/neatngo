@@ -3,7 +3,7 @@ import { AddOrganizationDialog } from "./AddOrganiziationDialog";
 import { db } from "@/db";
 import { organizations, users } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { OrganizationList } from "./OrganizationList";
 import { EmptyState } from "./EmptyState";
 
@@ -22,9 +22,10 @@ export default async function OrganizationPage() {
       .where(eq(users.email, email as string));
 
     const organizationList = await tx
-      .select({ id: organizations.id, name: organizations.name })
+      .select({ id: organizations.id, name: organizations.name, isPublic: organizations.isPublic })
       .from(organizations)
-      .where(eq(organizations.createdById, user[0].id));
+      .where(eq(organizations.createdById, user[0].id))
+      .orderBy(desc(organizations.createdAt));
 
     return organizationList;
   });
@@ -37,9 +38,9 @@ export default async function OrganizationPage() {
       </LayoutHeader>
       <LayoutBody>
         {org.length > 0 ? (
-          <div className="flex gap-1">
+          <div className="flex gap-4">
             {org.map((o) => (
-              <OrganizationList key={o.id} id={o.id} name={o.name} />
+              <OrganizationList key={o.id} id={o.id} name={o.name} isPublic={o.isPublic}/>
             ))}
           </div>
         ) : (

@@ -5,14 +5,7 @@ import { memberships, organizations, users } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
 import { auth } from "@clerk/nextjs/server";
 import { count, eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-
-export async function deleteOrganization({ id }: { id: string }) {
-  // need to handle foreign key constraint
-  await db.delete(organizations).where(eq(organizations.id, id));
-
-  revalidatePath("/");
-}
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function addOrganization({ name }: { name: string }) {
   return handleApiRequest(async () => {
@@ -57,3 +50,37 @@ export async function addOrganization({ name }: { name: string }) {
     return res
   })
 }   
+
+export async function deleteOrganization({ id }: { id: string }) {
+  // need to handle foreign key constraint
+  await db.delete(organizations).where(eq(organizations.id, id));
+
+  revalidatePath("/");
+}
+
+export async function toggleOrganizationStatus({
+  isPublic,
+  id,
+}: {
+  isPublic: boolean;
+  id: string;
+}) {
+  unstable_noStore();
+  return handleApiRequest(async () => {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(organizations)
+        .set({
+          isPublic,
+        })
+        .where(eq(organizations.id, id));
+    });
+
+    revalidatePath(`/dashboard/organization/${id}`);
+
+    return {
+      data: null,
+      error: null,
+    };
+  });
+}
