@@ -138,7 +138,7 @@ export const events = pgTable("events", {
     .primaryKey(),
   organizationId: text("organization_id")
     .notNull()
-    .references(() => organizations.id),
+    .references(() => organizations.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   description: text("description"),
   eventType: eventTypeEnum("event_type").notNull(),
@@ -158,7 +158,7 @@ export const eventRegistrations = pgTable("event_registrations", {
     .primaryKey(),
   eventId: text("event_id")
     .notNull()
-    .references(() => events.id),
+    .references(() => events.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
