@@ -33,9 +33,9 @@ export async function addOrganization({ name }: { name: string }) {
         .from(users)
         .leftJoin(organizations, eq(organizations.createdById, user[0].id));
 
-      // if (organizationCount[0].organizationCount > 1) {
-      //   throw new Error("You have reached the maximum number of organizations you can create")
-      // }
+      if (process.env.ENVIRONMENT !== "dev" && organizationCount[0].organizationCount > 1) {
+        throw new Error("You have reached the maximum number of organizations you can create")
+      }
 
       const organization = await tx
         .insert(organizations)
