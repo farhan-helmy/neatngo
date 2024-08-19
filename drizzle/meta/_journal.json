@@ -29,6 +29,13 @@
       "when": 1723994410720,
       "tag": "0006_spicy_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1723997701405,
+      "tag": "0007_lovely_starjammers",
+      "breakpoints": true
     }
   ]
 }

@@ -43,9 +43,9 @@ export const customFieldTypeEnum = pgEnum("custom_field_type", [
 export const eventTypeEnum = pgEnum("event_type", [
   "WORKSHOP",
   "FUNDRAISER",
-  "VOLUNTEERING",
   "MEETING",
   "OTHER",
+  "VOLUNTEERING",
 ]);
 
 export type EventType = (typeof eventTypeEnum.enumValues)[number];
