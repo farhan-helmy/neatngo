@@ -80,42 +80,22 @@ export async function PublicOrganizationsCaorusel() {
           <CarouselItem key={id} className="px-3 md:basis-1/2 lg:basis-1/3">
             <div className="p-1">
               <Link href={`/ngo/${name}`}>
-              
-              <Card className="bg-muted/50 relative mt-8 flex flex-col justify-center items-center">
-                <CardHeader className="mt-8 flex justify-center items-center pb-2">
-                  <Image
-                    src={`/assets/ngoplaceholder.png`}
-                    alt={`${name}`}
-                    width={96}
-                    height={96}
-                    className="absolute -top-8 rounded-full w-24 h-24 aspect-square object-cover"
-                  />
-                  <CardTitle className="text-center pt-4">{name}</CardTitle>
-                </CardHeader>
+                <Card className="bg-muted/50 relative mt-8 flex flex-col justify-center items-center">
+                  <CardHeader className="mt-8 flex justify-center items-center pb-2">
+                    <Image
+                      src={`/assets/ngoplaceholder.png`}
+                      alt={`${name}`}
+                      width={96}
+                      height={96}
+                      className="absolute -top-8 rounded-full w-24 h-24 aspect-square object-cover"
+                    />
+                    <CardTitle className="text-center pt-4">{name}</CardTitle>
+                  </CardHeader>
 
-                <CardContent className="text-sm text-center py-2">
-                  <p>{description}</p>
-                </CardContent>
-
-                <CardFooter>
-                  {socialNetworks.map(({ name, url }) => (
-                    <div key={name}>
-                      <a
-                        rel="noreferrer noopener"
-                        href={url}
-                        target="_blank"
-                        className={buttonVariants({
-                          variant: "ghost",
-                          size: "sm",
-                        })}
-                      >
-                        <span className="sr-only">{name} icon</span>
-                        {socialIcon(name)}
-                      </a>
-                    </div>
-                  ))}
-                </CardFooter>
-              </Card>
+                  <CardContent className="text-sm text-center py-2">
+                    <p>{description}</p>
+                  </CardContent>
+                </Card>
               </Link>
             </div>
           </CarouselItem>

@@ -18,6 +18,7 @@ import { LayoutDashboard, LogIn, Menu, UserRound } from "lucide-react";
 import { ToggleTheme } from "@/components/layout/toggle-theme";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
 interface RouteProps {
   href: string;
@@ -37,6 +38,12 @@ const routeList: RouteProps[] = [
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const pathname = usePathname();
+
+  if(pathname.includes("dashboard")) {
+    return null;
+  }
   return (
     <header className="sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background">
       <NavigationMenu className="mx-auto">
