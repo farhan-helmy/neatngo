@@ -1,6 +1,6 @@
 import { InferResultType } from "@/helper";
 import { createId } from "@paralleldrive/cuid2";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   date,
@@ -76,6 +76,7 @@ export const organizations = pgTable("organizations", {
     .$defaultFn(() => createId())
     .primaryKey(),
   name: text("name").notNull(),
+  uniqueSlug: text("unique_slug").unique().notNull(),
   description: text("description"),
   rosRegistrationNumber: text("ros_registration_number").notNull(),
   isPublic: boolean("is_public").default(false).notNull(),

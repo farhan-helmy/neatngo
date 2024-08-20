@@ -36,6 +36,55 @@
       "when": 1723997701405,
       "tag": "0007_lovely_starjammers",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1724082191081,
+      "tag": "0008_panoramic_lord_tyger",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1724082324841,
+      "tag": "0009_broken_khan",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1724082407280,
+      "tag": "0010_large_pete_wisdom",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1724082597977,
+      "tag": "0011_low_aqueduct",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1724082691645,
+      "tag": "0012_odd_karma",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1724082928462,
+      "tag": "0013_groovy_wendell_vaughn",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1724083661083,
+      "tag": "0014_small_earthquake",
+      "breakpoints": true
     }
   ]
 }
