@@ -1,7 +1,10 @@
 "use client";
 import { Layout, LayoutBody, LayoutHeader } from "@/components/custom/layout";
-import { formatDate } from "@/helper";
+import { Button } from "@/components/ui/button";
+
 import { useUser } from "@clerk/nextjs";
+import { format } from "date-fns";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user } = useUser();
@@ -9,8 +12,15 @@ export default function DashboardPage() {
   if (!user || process.env.ENVIRONMENT === "dev") {
     return (
       <Layout>
-        <LayoutHeader>Welcome back!</LayoutHeader>
-        <LayoutBody>You are using a demo account.</LayoutBody>
+        <LayoutHeader className="font-light"> {format(new Date(), 'PPpp')}</LayoutHeader>
+        <LayoutBody className="flex flex-col items-center mt-12">
+          <div className="text-4xl text-center font-bold">
+            Welcome to NeatNGO Admin
+          </div>
+          <Link href="/dashboard/organization" className="pt-4">
+            <Button>Get Started</Button>
+          </Link>
+        </LayoutBody>
       </Layout>
     );
   }
@@ -19,7 +29,7 @@ export default function DashboardPage() {
     <Layout>
       <LayoutHeader>Welcome back!</LayoutHeader>
       <LayoutBody>
-        Last signed in at {formatDate(user.lastSignInAt!)}
+        <div className="text-4xl text-center font-bold">Welcome</div>
       </LayoutBody>
     </Layout>
   );
