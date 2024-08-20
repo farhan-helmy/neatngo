@@ -12,7 +12,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio --port 9090",
     "db:seed": "bun run ./src/db/seed",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "createslug": "tsx --no-warnings --env-file=.env src/db/createUniqueSlug.ts"
   },
   "resolutions": {
     "string-width": "4.2.3"
@@ -82,6 +83,7 @@
     "jsdom": "^24.1.1",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.5",
+    "tsx": "^4.17.0",
     "typescript": "^5.5.3",
     "vitest": "^2.0.5"
   },

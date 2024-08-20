@@ -8,7 +8,7 @@ import { ScrollToTop } from "@/components/landing/ScrollToTop";
 export default function Home() {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <Hero />
       <About />
       <PublicOrganizationsCaorusel />

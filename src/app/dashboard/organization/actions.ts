@@ -43,6 +43,7 @@ export async function addOrganization({ name }: { name: string }) {
           name,
           rosRegistrationNumber: "",
           createdById: user[0].id,
+          uniqueSlug: name.toLowerCase().replace(/\s/g, "-"),
         })
         .returning({
           orgId: organizations.id,
