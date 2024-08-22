@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1723217239997,
-      "tag": "0000_rapid_karnak",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1723390100204,
-      "tag": "0004_sweet_zodiak",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1723827264388,
-      "tag": "0005_add_is_public_into_organizations",
+      "when": 1724323875255,
+      "tag": "0000_kind_klaw",
       "breakpoints": true
     },
     {

@@ -76,8 +76,9 @@ export const organizations = pgTable("organizations", {
     .$defaultFn(() => createId())
     .primaryKey(),
   name: text("name").notNull(),
+  fullName: text("full_name").default(""),
+  about: text("about").default(""),
   uniqueSlug: text("unique_slug").unique().notNull(),
-  description: text("description"),
   rosRegistrationNumber: text("ros_registration_number").notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
   createdById: text("created_by_id")
