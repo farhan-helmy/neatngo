@@ -1,7 +1,3 @@
-import { getOrganizations } from "./actions";
+import { getOrganization } from "./actions";
 
-type GetOrganizationsReturn = Awaited<ReturnType<typeof getOrganizations>>;
-
-export type OrganizationResults = NonNullable<
-  GetOrganizationsReturn["data"]
->[number]; // use number to get the type of an individual item in the array
+export type OrganizationResult = Awaited<ReturnType<typeof getOrganization>>["data"];

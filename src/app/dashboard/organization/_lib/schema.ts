@@ -1,4 +1,3 @@
-import { organizations } from "@/db/schema";
 import { z } from "zod";
 
 export const organizationFormSchema = z.object({
@@ -25,8 +24,9 @@ export const organizationFormSchema = z.object({
   about: z.string().max(1000, {
     message: "About must be less than 1000 characters",
   }),
-  isPublic: z.boolean(),
 });
+
+export type OrganizationFormData = z.infer<typeof organizationFormSchema>;
 
 export const editOrganizationFormSchema = z.object({
   name: z
@@ -39,8 +39,21 @@ export const editOrganizationFormSchema = z.object({
     .max(50, {
       message: "Name must be less than 50 characters",
     }),
+  fullName: z
+    .string({
+      required_error: "Full name is required",
+    })
+    .min(1, {
+      message: "Name is required",
+    })
+    .max(50, {
+      message: "Name must be less than 50 characters",
+    }),
   about: z.string().max(1000, {
     message: "About must be less than 1000 characters",
   }),
-  isPublic: z.boolean(),
 });
+
+export type EditOrganizationFormData = z.infer<
+  typeof editOrganizationFormSchema
+>;

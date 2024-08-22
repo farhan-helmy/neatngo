@@ -1,31 +1,50 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { toast } from "sonner"
+import { updateOrganization } from "../../_lib/actions"
 import { organizationFormSchema } from "../../_lib/schema"
+import { OrganizationResult } from "../../_lib/type"
+import { updateOrganizationSchema } from "../../_lib/validations"
 
-type organizationFormValues = z.infer<typeof organizationFormSchema>
-
-interface GeneralFormProps {
-    initialData: Partial<organizationFormValues>;
+interface UpdateOrganizationPageProps {
+    organization: OrganizationResult;
 }
+export function GeneralForm({ organization, ...props }: UpdateOrganizationPageProps) {
+    const [isLoading, setIsLoading] = useState(false);
 
-export function GeneralForm({initialData}: GeneralFormProps) {
-    const form = useForm<organizationFormValues>({
+    const form = useForm<updateOrganizationSchema>({
         resolver: zodResolver(organizationFormSchema),
-        defaultValues: initialData,
+        defaultValues: {
+            name: organization?.name,
+            fullName: organization?.fullName || "default full name",
+            about: organization?.about || "default about",
+        },
         mode: "onChange",
     });
 
-    function onSubmit(data: organizationFormValues) {
-        console.log({ data })
+    async function onSubmit(input: updateOrganizationSchema) {
+        setIsLoading(true);
+        try {
+            await updateOrganization({
+                id: organization.id,
+                ...input,
+            });
+
+            toast.success("Organization updated successfully");
+        } catch (error) {
+            console.error("Failed to update organization:", error);
+            toast.error("Failed to update organization. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -83,30 +102,9 @@ export function GeneralForm({initialData}: GeneralFormProps) {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="isPublic"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Visibility</FormLabel>
-                            <FormControl>
-                                <Select onValueChange={field.onChange}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={field.value ? 'Public' : 'Private'} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="true">Public</SelectItem>
-                                        <SelectItem value="false">Private</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormDescription>
-                                Set your organization as public or private.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-                <Button type="submit">Update profile</Button>
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading ? "Updating..." : "Update profile"}
+                </Button>
             </form>
         </Form>
     )
