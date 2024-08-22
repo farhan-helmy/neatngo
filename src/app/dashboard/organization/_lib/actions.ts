@@ -3,7 +3,7 @@ import { organizations } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
 
 export async function getOrganizations() {
-  try {
+return handleApiRequest(async () => {
     const data = await db
       .select({
         id: organizations.id,
@@ -15,11 +15,8 @@ export async function getOrganizations() {
       .from(organizations)
       .execute();
 
-    return { data, error: null };
-  } catch (error) {
-    console.error("Error fetching organizations:", error);
-    return { data: null, error: "Failed to fetch organizations" };
-  }
+    return data;
+  });
 }
 
 export async function updateOrganization() {}
