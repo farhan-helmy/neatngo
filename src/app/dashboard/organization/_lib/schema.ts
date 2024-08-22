@@ -15,6 +15,7 @@ export const organizationFormSchema = z.object({
     .string({
       required_error: "Full name is required",
     })
+  
     .min(1, {
       message: "Full name is required",
     })

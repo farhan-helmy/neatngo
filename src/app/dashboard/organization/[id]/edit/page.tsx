@@ -22,5 +22,5 @@ export default async function EditOrganizationPage({ params }: { params: { id: s
       <Separator />
       <GeneralForm initialData={organization} />
     </div>
-  )
+  );
 }

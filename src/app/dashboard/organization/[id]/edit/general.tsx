@@ -60,7 +60,7 @@ export function GeneralForm({ organization, ...props }: UpdateOrganizationPagePr
                                 <Input placeholder="MRDS" {...field} />
                             </FormControl>
                             <FormDescription>
-                                Your NGO's short name.
+                                Your NGO&apos;s short name.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -76,7 +76,7 @@ export function GeneralForm({ organization, ...props }: UpdateOrganizationPagePr
                                 <Input placeholder="Malaysian Rare Disease Society" {...field} />
                             </FormControl>
                             <FormDescription>
-                                Your NGO's full name.
+                                Your NGO&apos;s full name.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
