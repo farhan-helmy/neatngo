@@ -1,6 +1,6 @@
 import { InferResultType } from "@/helper";
 import { createId } from "@paralleldrive/cuid2";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   date,
@@ -43,9 +43,9 @@ export const customFieldTypeEnum = pgEnum("custom_field_type", [
 export const eventTypeEnum = pgEnum("event_type", [
   "WORKSHOP",
   "FUNDRAISER",
-  "VOLUNTEERING",
   "MEETING",
   "OTHER",
+  "VOLUNTEERING",
 ]);
 
 export type EventType = (typeof eventTypeEnum.enumValues)[number];
@@ -78,6 +78,7 @@ export const organizations = pgTable("organizations", {
   name: text("name").notNull(),
   fullName: text("full_name").default(""),
   about: text("about").default(""),
+  uniqueSlug: text("unique_slug").unique().notNull(),
   rosRegistrationNumber: text("ros_registration_number").notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
   createdById: text("created_by_id")
@@ -139,7 +140,7 @@ export const events = pgTable("events", {
     .primaryKey(),
   organizationId: text("organization_id")
     .notNull()
-    .references(() => organizations.id),
+    .references(() => organizations.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   description: text("description"),
   eventType: eventTypeEnum("event_type").notNull(),
@@ -159,7 +160,7 @@ export const eventRegistrations = pgTable("event_registrations", {
     .primaryKey(),
   eventId: text("event_id")
     .notNull()
-    .references(() => events.id),
+    .references(() => events.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
     .references(() => users.id),

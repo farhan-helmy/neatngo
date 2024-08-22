@@ -13,43 +13,50 @@ export async function addOrganization({ name }: { name: string }) {
 
     const email =
       process.env.ENVIRONMENT === "dev"
-        ? process.env.DEMO_USER_EMAIL : sessionClaims?.email;
+        ? process.env.DEMO_USER_EMAIL
+        : sessionClaims?.email;
 
     const res = await db.transaction(async (tx) => {
-      const user = await tx.select({ id: users.id }).from(users).where(eq(users.email, email as string));
+      const user = await tx
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, email as string));
 
       if (!user) {
         throw new Error("User not found");
       }
 
-      const organizationCount = await tx.select({
-        organizationCount: count(organizations.id),
-      })
+      const organizationCount = await tx
+        .select({
+          organizationCount: count(organizations.id),
+        })
         .from(users)
-        .leftJoin(organizations, eq(organizations.createdById, user[0].id))
+        .leftJoin(organizations, eq(organizations.createdById, user[0].id));
 
-
-      if (organizationCount[0].organizationCount > 1) {
+      if (process.env.ENVIRONMENT !== "dev" && organizationCount[0].organizationCount > 1) {
         throw new Error("You have reached the maximum number of organizations you can create")
       }
 
-      const organization = await tx.insert(organizations).values({
-        name,
-        rosRegistrationNumber: "",
-        createdById: user[0].id,
-      }).returning({
-        orgId: organizations.id,
-      });
+      const organization = await tx
+        .insert(organizations)
+        .values({
+          name,
+          rosRegistrationNumber: "",
+          createdById: user[0].id,
+          uniqueSlug: name.toLowerCase().replace(/\s/g, "-"),
+        })
+        .returning({
+          orgId: organizations.id,
+        });
 
       return organization;
-    })
+    });
 
-    revalidatePath("/dashboard/organization")
+    revalidatePath("/dashboard/organization");
 
-
-    return res
-  })
-}   
+    return res;
+  });
+}
 
 export async function deleteOrganization({ id }: { id: string }) {
   // need to handle foreign key constraint

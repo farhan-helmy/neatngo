@@ -26,7 +26,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { addMember } from "../_lib/actions";
+import { addMember } from "../../_lib/actions";
 import { useParams } from "next/navigation";
 import { PlusIcon } from "@radix-ui/react-icons";
 
@@ -54,6 +54,9 @@ const formSchema = z.object({
     .string({
       required_error: "Phone number is required",
       message: "Phone number is required and must be a string",
+    })
+    .regex(/^(\+?6?01)[02-46-9]-*[0-9]{7}$|^(\+?6?01)[1]-*[0-9]{8}$/gm, {
+      message: "Phone number is not valid",
     })
     .min(1, {
       message: "Phone number is required",

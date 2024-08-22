@@ -19,7 +19,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { updateOrganization } from "../../_lib/actions";
 import { organizationFormSchema } from "../../_lib/schema";
-import { OrganizationResult } from "../../_lib/type";
 import { updateOrganizationSchema } from "../../_lib/validations";
 
 interface UpdateOrganizationPageProps {
