@@ -1,6 +1,6 @@
 import { EventWithOrganization } from "@/db/schema";
 
-export function EventListing({event}: EventWithOrganization) {
+export function EventListing() {
     return (
         <div>
             <div>

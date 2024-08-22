@@ -16,9 +16,9 @@ export default async function EventsPage() {
     <div>
       <div>all events page</div>
       <div>
-        {eventData.map((event) => (
-            <EventListing key={event.id} event={event} />
-        ))}
+        {/* {eventData.map((event) => (
+            <EventListing />
+        ))} */}
       </div>
     </div>
   );
