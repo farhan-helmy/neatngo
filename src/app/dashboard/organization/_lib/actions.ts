@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/db";
 import { organizations } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
