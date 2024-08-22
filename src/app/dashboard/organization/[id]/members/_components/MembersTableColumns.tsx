@@ -1,13 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { users, UserWithMemberships, type SelectUsers } from "@/db/schema";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { type ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
 
 import { formatDate } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -22,12 +20,6 @@ import { UserResult } from "../_lib/type";
 import { DeleteMemberDialog } from "./DeleteMemberDialog";
 import { Switch } from "@/components/ui/switch";
 import { toggleMembershipStatus } from "../_lib/actions";
-import { useParams } from "next/navigation";
-
-// import { updateTask } from "../_lib/actions";
-// import { getPriorityIcon, getStatusIcon } from "../_lib/utils";
-// import { DeleteTasksDialog } from "./delete-tasks-dialog";
-// import { UpdateTaskSheet } from "./update-task-sheet";
 
 export function getColumns(): ColumnDef<UserResult>[] {
   return [

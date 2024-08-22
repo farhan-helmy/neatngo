@@ -51,6 +51,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { formatEventType } from "../_lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface UpdateEventSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -68,6 +69,7 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
       name: event.name ?? "",
       location: event.location ?? "",
       description: event.description ?? "",
+      isInternalEvent: event.isInternalEvent ?? false,
       eventType: event.eventType ?? "",
       startDate: (event.startDate as Date) ?? new Date(),
       endDate: (event.endDate as Date) ?? new Date(),
@@ -80,6 +82,7 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
       location: event.location ?? "",
       description: event.description ?? "",
       eventType: event.eventType ?? "",
+      isInternalEvent: event.isInternalEvent ?? false,
       startDate: (event.startDate as Date) ?? new Date(),
       endDate: (event.endDate as Date) ?? new Date(),
     });
@@ -100,7 +103,7 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
 
       form.reset();
       props.onOpenChange?.(false);
-      toast.success("Task updated");
+      toast.success("Event updated");
     });
   }
 
@@ -182,6 +185,24 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
                     </SelectContent>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isInternalEvent"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+
+                  <FormLabel>Internal event</FormLabel>
+               
                 </FormItem>
               )}
             />

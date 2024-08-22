@@ -144,11 +144,15 @@ export const events = pgTable("events", {
   name: text("name").notNull(),
   description: text("description"),
   eventType: eventTypeEnum("event_type").notNull(),
+  otherEventType: text("other_event_type").default(""),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   location: text("location"),
   isOnline: boolean("is_online").default(false),
+  isPublished: boolean("is_published").default(false),
+  isInternalEvent: boolean("is_internal_event").default(false),
   maxAttendees: integer("max_attendees"),
+  headerImageUrl: text("header_image_url").default(""),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -304,4 +308,9 @@ export type UserWithMemberships = InferResultType<
 export type OrganizationWithMemberships = InferResultType<
   "organizations",
   { memberships: true }
+>;
+
+export type EventWithOrganization = InferResultType<
+  "events",
+  { organization: true }
 >;
