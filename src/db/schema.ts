@@ -308,3 +308,8 @@ export type OrganizationWithMemberships = InferResultType<
   "organizations",
   { memberships: true }
 >;
+
+export type EventWithOrganization = InferResultType<
+  "events",
+  { organization: true }
+>;
