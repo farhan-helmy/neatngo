@@ -29,12 +29,6 @@ export function OrganizationList({ id, name, isPublic }: { id: string; name: str
             <EyeIcon className="h-4 w-4" aria-hidden="true" />
           </Link>
 
-          <Link
-            className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500"
-            href={`/dashboard/organization/${id}/edit`}
-          >
-            <PenIcon className="h-4 w-4" aria-hidden="true" />
-          </Link>
           <button
             onClick={() => {
               deleteOrganization({ id });

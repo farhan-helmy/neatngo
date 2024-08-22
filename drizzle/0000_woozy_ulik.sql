@@ -11,7 +11,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."event_type" AS ENUM('WORKSHOP', 'FUNDRAISER', 'VOLUNTEER_ACTIVITY', 'MEETING', 'OTHER');
+ CREATE TYPE "public"."event_type" AS ENUM('WORKSHOP', 'FUNDRAISER', 'VOLUNTEERING', 'MEETING', 'OTHER');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS "memberships" (
 	"is_paid" boolean DEFAULT false,
 	"membership_start_date" date,
 	"membership_expiry" date,
+	"is_active" boolean DEFAULT true,
 	"ic_number" text,
 	"phone" text,
 	"address_1" text,
@@ -126,8 +127,10 @@ CREATE TABLE IF NOT EXISTS "memberships" (
 CREATE TABLE IF NOT EXISTS "organizations" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
-	"description" text,
+	"full_name" text DEFAULT '',
+	"about" text DEFAULT '',
 	"ros_registration_number" text NOT NULL,
+	"is_public" boolean DEFAULT false NOT NULL,
 	"created_by_id" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL

@@ -85,7 +85,7 @@ export async function PublicOrganizationsCaorusel() {
                                 </CardHeader>
 
                                 <CardContent className="text-sm text-center py-2">
-                                    <p>{description}</p>
+                                    <p>{description ?? ""}</p>
                                 </CardContent>
 
                                 <CardFooter>

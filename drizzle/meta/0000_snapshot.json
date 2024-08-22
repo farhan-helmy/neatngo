@@ -1,5 +1,5 @@
 {
-  "id": "d015bd96-f1f2-4d8a-8615-e5ef8ca9be3a",
+  "id": "9acf8ff6-84d0-4a05-b5cb-a9905068202b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -539,6 +539,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
         "ic_number": {
           "name": "ic_number",
           "type": "text",
@@ -656,17 +663,32 @@
           "primaryKey": false,
           "notNull": true
         },
-        "description": {
-          "name": "description",
+        "full_name": {
+          "name": "full_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "''"
+        },
+        "about": {
+          "name": "about",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
         },
         "ros_registration_number": {
           "name": "ros_registration_number",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "created_by_id": {
           "name": "created_by_id",
@@ -800,7 +822,7 @@
       "values": [
         "WORKSHOP",
         "FUNDRAISER",
-        "VOLUNTEER_ACTIVITY",
+        "VOLUNTEERING",
         "MEETING",
         "OTHER"
       ]
