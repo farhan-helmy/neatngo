@@ -1,6 +1,6 @@
 {
-  "id": "d47fcca0-f5bb-4519-b0e1-4f9c1360bb5e",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "5d313341-d936-4686-8b05-3a9dbe08e55b",
+  "prevId": "249b296a-dcd9-4e0e-9671-a21bf903478e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -363,7 +363,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "event_registrations_user_id_users_id_fk": {
@@ -443,6 +443,13 @@
           "notNull": false,
           "default": false
         },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "max_attendees": {
           "name": "max_attendees",
           "type": "integer",
@@ -476,7 +483,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -663,19 +670,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "full_name": {
-          "name": "full_name",
+        "unique_slug": {
+          "name": "unique_slug",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": "''"
+          "notNull": true
         },
-        "about": {
-          "name": "about",
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": "''"
+          "notNull": false
         },
         "ros_registration_number": {
           "name": "ros_registration_number",
@@ -728,7 +733,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "organizations_unique_slug_unique": {
+          "name": "organizations_unique_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "unique_slug"
+          ]
+        }
+      }
     },
     "public.users": {
       "name": "users",
@@ -822,9 +835,9 @@
       "values": [
         "WORKSHOP",
         "FUNDRAISER",
-        "VOLUNTEERING",
         "MEETING",
-        "OTHER"
+        "OTHER",
+        "VOLUNTEERING"
       ]
     },
     "public.membership_type": {
@@ -856,6 +869,7 @@
     }
   },
   "schemas": {},
+  "sequences": {},
   "_meta": {
     "columns": {},
     "schemas": {},

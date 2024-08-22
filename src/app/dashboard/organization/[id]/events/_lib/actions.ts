@@ -173,6 +173,7 @@ export async function updateEvent(input: UpdateEventSchema & { id: string; orgId
             name: input.name,
             description: input.description,
             eventType: input.eventType,
+            isInternalEvent: input.isInternalEvent,
             startDate: new Date(input.startDate!),
             endDate: new Date(input.endDate!),
             location: input.location
@@ -213,6 +214,45 @@ export async function deleteEvent({ eventId, orgId }: { eventId: string[], orgId
       return res;
     } catch (error) {
       console.error("Error deleting event:", error);
+      throw error;
+    }
+  });
+}
+
+export async function toggleEventPublishStatus({
+  eventId,
+  isPublished,
+}: {
+  eventId: string;
+  isPublished: boolean;
+}) {
+  noStore();
+  return handleApiRequest(async () => {
+    try {
+      const res = await db.transaction(async (tx) => {
+        const updatedEvent = await tx
+          .update(events)
+          .set({
+            isPublished,
+          })
+          .where(eq(events.id, eventId))
+          .returning({
+            id: events.id,
+            isPublished: events.isPublished,
+          });
+
+        if (!updatedEvent.length) {
+          throw new Error("Event not found or update failed");
+        }
+
+        return updatedEvent[0];
+      });
+
+      revalidatePath(`/dashboard/organization`);
+
+      return res;
+    } catch (error) {
+      console.error("Error updating event:", error);
       throw error;
     }
   });

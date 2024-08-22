@@ -1,6 +1,6 @@
 {
-  "id": "0dd58787-7886-4965-874e-ab00342b0143",
-  "prevId": "d43a78c7-81a3-491c-aacf-99747a7c4428",
+  "id": "c59b939a-67b1-4f9e-a249-eaf5db415fd9",
+  "prevId": "16620d4e-da2e-4878-88f9-a4bde6ff6098",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -363,7 +363,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "event_registrations_user_id_users_id_fk": {
@@ -418,6 +418,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "other_event_type": {
+          "name": "other_event_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
         "start_date": {
           "name": "start_date",
           "type": "timestamp",
@@ -443,11 +450,32 @@
           "notNull": false,
           "default": false
         },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_internal_event": {
+          "name": "is_internal_event",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "max_attendees": {
           "name": "max_attendees",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "header_image_url": {
+          "name": "header_image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
         },
         "created_at": {
           "name": "created_at",
@@ -476,7 +504,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -663,6 +691,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "unique_slug": {
+          "name": "unique_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "description": {
           "name": "description",
           "type": "text",
@@ -720,7 +754,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "organizations_unique_slug_unique": {
+          "name": "organizations_unique_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "unique_slug"
+          ]
+        }
+      }
     },
     "public.users": {
       "name": "users",
@@ -814,9 +856,9 @@
       "values": [
         "WORKSHOP",
         "FUNDRAISER",
-        "VOLUNTEERING",
         "MEETING",
-        "OTHER"
+        "OTHER",
+        "VOLUNTEERING"
       ]
     },
     "public.membership_type": {
@@ -848,6 +890,7 @@
     }
   },
   "schemas": {},
+  "sequences": {},
   "_meta": {
     "columns": {},
     "schemas": {},
