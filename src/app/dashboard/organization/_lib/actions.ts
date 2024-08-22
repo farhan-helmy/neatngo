@@ -16,22 +16,20 @@ const GetOrganizationSchema = z.object({
 export type GetOrganizationInput = z.infer<typeof GetOrganizationSchema>;
 
 export async function getOrganization(input: GetOrganizationInput) {
-  return handleApiRequest(async () => {
-    const { id } = GetOrganizationSchema.parse(input);
+  const { id } = GetOrganizationSchema.parse(input);
 
-    const data = await db
-      .select({
-        id: organizations.id,
-        name: organizations.name,
-        fullName: organizations.fullName,
-        about: organizations.about,
-      })
-      .from(organizations)
-      .where(eq(organizations.id, id))
-      .execute();
+  const data = await db
+    .select({
+      id: organizations.id,
+      name: organizations.name,
+      fullName: organizations.fullName,
+      about: organizations.about,
+    })
+    .from(organizations)
+    .where(eq(organizations.id, id))
+    .execute();
 
-    return data;
-  });
+  return data[0];
 }
 
 export async function updateOrganization(

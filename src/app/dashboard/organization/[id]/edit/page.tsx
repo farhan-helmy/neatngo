@@ -5,8 +5,6 @@ import { getOrganization } from "../../_lib/actions";
 export default async function EditOrganizationPage({ params }: { params: { id: string } }) {
   const organization = await getOrganization({ id: params.id });
 
-  console.log(organization);
-
   if (!organization) {
     return <div>Organization not found.</div>
   }
@@ -20,7 +18,7 @@ export default async function EditOrganizationPage({ params }: { params: { id: s
         </p>
       </div>
       <Separator />
-      <GeneralForm initialData={organization} />
+      <GeneralForm organization={organization} />
     </div>
   );
 }
