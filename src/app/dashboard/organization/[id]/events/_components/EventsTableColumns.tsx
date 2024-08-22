@@ -28,6 +28,12 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 // import { UpdateMemberSheet } from "./UpdateMemberSheet";
 import { EventResults } from "../_lib/type";
@@ -35,11 +41,8 @@ import { formatEventType, getEventTypeIcon } from "../_lib/utils";
 import { MapPinIcon, MapPinnedIcon, MapPinOffIcon } from "lucide-react";
 import { UpdateEventSheet } from "./EditEventSheet";
 import { DeleteEventDialog } from "./DeleteEventDialog";
-
-// import { updateTask } from "../_lib/actions";
-// import { getPriorityIcon, getStatusIcon } from "../_lib/utils";
-// import { DeleteTasksDialog } from "./delete-tasks-dialog";
-// import { UpdateTaskSheet } from "./update-task-sheet";
+import { Switch } from "@/components/ui/switch";
+import { toggleEventPublishStatus } from "../_lib/actions";
 
 export function getColumns(): ColumnDef<EventResults>[] {
   return [
@@ -82,13 +85,22 @@ export function getColumns(): ColumnDef<EventResults>[] {
         <DataTableColumnHeader column={column} title="Location" />
       ),
       cell: ({ row }) => (
-        <div className="flex w-[6.25rem] items-center">
-          <MapPinnedIcon
-            className="mr-2 size-4 text-muted-foreground"
-            aria-hidden="true"
-          />
-          {row.getValue("location")}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex w-[6.25rem] items-center">
+                <MapPinnedIcon
+                  className="mr-2 size-4 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <div className="truncate">{row.getValue("location")}</div>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{row.getValue("location")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
       enableSorting: true,
       enableHiding: false,
@@ -138,7 +150,32 @@ export function getColumns(): ColumnDef<EventResults>[] {
       ),
       cell: ({ cell }) => formatDate(cell.getValue() as Date),
       enableSorting: true,
-      enableHiding: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "isPublished",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Publish" />
+      ),
+      cell: ({ row }) => (
+        <Switch
+          checked={row.getValue("isPublished")}
+          onCheckedChange={async (value) => {
+            const res = await toggleEventPublishStatus({
+              eventId: row.original.id,
+              isPublished: value,
+            });
+
+            if (res.error) {
+              toast.error(res.error);
+              return;
+            }
+            toast.success(`Event ${value ? "published" : "unpublished"}`);
+          }}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
     },
     {
       id: "actions",
@@ -173,6 +210,20 @@ export function getColumns(): ColumnDef<EventResults>[] {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${
+                        process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
+                          ? "https://demo.neatngo.com/events/"
+                          : "https://neatngo.com/events/"
+                      }${row.original.id}`
+                    );
+                    toast.success("Event link copied to clipboard");
+                  }}
+                >
+                  Copy event link
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setShowEditEventSheet(true)}>
                   Edit
                 </DropdownMenuItem>

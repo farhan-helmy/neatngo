@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "is_internal_event" boolean DEFAULT false;
