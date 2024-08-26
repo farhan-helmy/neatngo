@@ -19,6 +19,7 @@ export default async function checkPage() {
         .insert(users)
         .values({
           email: sessionClaims?.email as string,
+          role: "ORG_OWNER",
         })
         .returning({
           id: users.id,

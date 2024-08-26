@@ -92,6 +92,48 @@
       "when": 1724259543660,
       "tag": "0017_foamy_preak",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1724426625015,
+      "tag": "0018_ambiguous_mister_sinister",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1724426671407,
+      "tag": "0019_lazy_robbie_robertson",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1724427297109,
+      "tag": "0020_dazzling_solo",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1724428143086,
+      "tag": "0021_daffy_toro",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1724507641679,
+      "tag": "0022_misty_tempest",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1724510844334,
+      "tag": "0023_careless_big_bertha",
+      "breakpoints": true
     }
   ]
 }

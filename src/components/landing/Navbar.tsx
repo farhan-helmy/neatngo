@@ -14,11 +14,27 @@ import {
 } from "@/components/ui/sheet";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { LayoutDashboard, LogIn, Menu, UserRound } from "lucide-react";
+import {
+  CircleUser,
+  LayoutDashboard,
+  LogIn,
+  Menu,
+  UserRound,
+} from "lucide-react";
 import { ToggleTheme } from "@/components/layout/toggle-theme";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { User } from "lucia";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { logoutUser } from "@/lib/auth";
 
 interface RouteProps {
   href: string;
@@ -36,12 +52,12 @@ const routeList: RouteProps[] = [
   },
 ];
 
-export const Navbar = () => {
+export const Navbar = ({ user }: { user: User | null }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const pathname = usePathname();
 
-  if(pathname.includes("dashboard")) {
+  if (pathname.includes("dashboard")) {
     return null;
   }
   return (
@@ -108,9 +124,36 @@ export const Navbar = () => {
 
           <div className="hidden md:flex gap-2">
             {process.env.NEXT_PUBLIC_ENVIRONMENT === "dev" ? (
-              <Link href={"dashboard"}>
-                <Button>Sign In Demo</Button>
-              </Link>
+              <>
+                <Link href={"dashboard"}>
+                  <Button>Sign In Demo</Button>
+                </Link>
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="rounded-full"
+                      >
+                        <CircleUser className="h-5 w-5" />
+                        <span className="sr-only">Toggle user menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={async () => {
+                          await logoutUser();
+                        }}
+                      >
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : null}
+              </>
             ) : (
               <>
                 <SignedOut>

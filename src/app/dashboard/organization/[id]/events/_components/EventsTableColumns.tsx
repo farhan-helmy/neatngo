@@ -19,13 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -35,14 +28,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-// import { UpdateMemberSheet } from "./UpdateMemberSheet";
 import { EventResults } from "../_lib/type";
 import { formatEventType, getEventTypeIcon } from "../_lib/utils";
-import { MapPinIcon, MapPinnedIcon, MapPinOffIcon } from "lucide-react";
+import { MapPinIcon, MapPinnedIcon, MapPinOffIcon, Eye, Edit } from "lucide-react";
 import { UpdateEventSheet } from "./EditEventSheet";
 import { DeleteEventDialog } from "./DeleteEventDialog";
 import { Switch } from "@/components/ui/switch";
 import { toggleEventPublishStatus } from "../_lib/actions";
+import Link from "next/link";
 
 export function getColumns(): ColumnDef<EventResults>[] {
   return [
@@ -195,49 +188,59 @@ export function getColumns(): ColumnDef<EventResults>[] {
             <DeleteEventDialog
               events={[row.original]}
               showTrigger={false}
-              onSuccess={() => {}}
+              onSuccess={() => { }}
               open={showDeleteEventDialog}
               onOpenChange={setShowDeleteEventDialog}
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <div className="flex items-center space-x-2">
+              <Link href={`/dashboard/organization/${row.original.organizationId}/events/${row.original.id}`}>
                 <Button
-                  aria-label="Open menu"
                   variant="ghost"
-                  className="flex size-8 p-0 data-[state=open]:bg-muted"
+                  size="icon"
                 >
-                  <DotsHorizontalIcon className="size-4" aria-hidden="true" />
+                  <Eye className="h-4 w-4" />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      `${
-                        process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowEditEventSheet(true)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    aria-label="More options"
+                    variant="ghost"
+                    size="icon"
+                  >
+                    <DotsHorizontalIcon className="h-4 w-4" aria-hidden="true" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      navigator.clipboard.writeText(
+                        `${process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
                           ? "https://demo.neatngo.com/events/"
                           : "https://neatngo.com/events/"
-                      }${row.original.id}`
-                    );
-                    toast.success("Event link copied to clipboard");
-                  }}
-                >
-                  Copy event link
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setShowEditEventSheet(true)}>
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => setShowDeleteEventDialog(true)}
-                >
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                        }${row.original.id}`
+                      );
+                      toast.success("Event link copied to clipboard");
+                    }}
+                  >
+                    Copy Link
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setShowDeleteEventDialog(true)}>
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </>
         );
       },
-      size: 40,
     },
   ];
 }

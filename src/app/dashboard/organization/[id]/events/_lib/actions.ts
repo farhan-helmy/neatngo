@@ -1,11 +1,30 @@
 "use server";
 
 import { db } from "@/db";
-import { events, eventTypeEnum, organizations, SelectEvent, users } from "@/db/schema";
+import {
+  eventRegistrations,
+  events,
+  eventTypeEnum,
+  organizations,
+  SelectEvent,
+  users,
+} from "@/db/schema";
 import { handleApiRequest } from "@/helper";
-import { and, asc, count, desc, eq, gte, inArray, lte, or, SQL, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gte,
+  inArray,
+  lte,
+  or,
+  SQL,
+  sql,
+} from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { unstable_noStore as noStore } from "next/cache"
+import { unstable_noStore as noStore } from "next/cache";
 import { GetEventsSchema } from "./schema";
 import { filterColumn } from "@/lib/filter-column";
 import { DrizzleWhere } from "@/types";
@@ -13,25 +32,41 @@ import { UpdateEventSchema } from "./validations";
 
 export async function getEvents(input: GetEventsSchema) {
   noStore();
-  const { page, per_page, sort, name, startDate, endDate, eventType, location, operator, from, to, orgId } =
-    input
+  const {
+    page,
+    per_page,
+    sort,
+    name,
+    startDate,
+    endDate,
+    eventType,
+    location,
+    operator,
+    from,
+    to,
+    orgId,
+  } = input;
 
   try {
     // Offset to paginate the results
-    const offset = (page - 1) * per_page
+    const offset = (page - 1) * per_page;
     // Column and order to sort by
     // Spliting the sort string by "." to get the column and order
     // Example: "title.desc" => ["title", "desc"]
     const [column, order] = (sort?.split(".").filter(Boolean) ?? [
       "createdAt",
       "desc",
-    ]) as [keyof SelectEvent | undefined, "asc" | "desc" | undefined]
+    ]) as [keyof SelectEvent | undefined, "asc" | "desc" | undefined];
 
     // Convert the date strings to date objects
-    const fromDay = from ? sql`to_date(${from}, 'yyyy-mm-dd')` : undefined
-    const toDay = to ? sql`to_date(${to}, 'yyy-mm-dd')` : undefined
-    const eventStartDate = startDate ? sql`to_date(${startDate}, 'yyyy-mm-dd')` : undefined
-    const eventEndDate = endDate ? sql`to_date(${endDate}, 'yyyy-mm-dd')` : undefined
+    const fromDay = from ? sql`to_date(${from}, 'yyyy-mm-dd')` : undefined;
+    const toDay = to ? sql`to_date(${to}, 'yyy-mm-dd')` : undefined;
+    const eventStartDate = startDate
+      ? sql`to_date(${startDate}, 'yyyy-mm-dd')`
+      : undefined;
+    const eventEndDate = endDate
+      ? sql`to_date(${endDate}, 'yyyy-mm-dd')`
+      : undefined;
 
     const expressions: (SQL<unknown> | undefined)[] = [
       name
@@ -73,11 +108,13 @@ export async function getEvents(input: GetEventsSchema) {
       fromDay && toDay
         ? and(gte(events.createdAt, fromDay), lte(users.createdAt, toDay))
         : undefined,
-      eq(events.organizationId, orgId!)
-    ]
+      eq(events.organizationId, orgId!),
+    ];
 
     const where: DrizzleWhere<SelectEvent> =
-      !operator || operator === "and" ? and(...expressions) : or(...expressions)
+      !operator || operator === "and"
+        ? and(...expressions)
+        : or(...expressions);
 
     const { data, total } = await db.transaction(async (tx) => {
       const data = await tx
@@ -92,8 +129,7 @@ export async function getEvents(input: GetEventsSchema) {
               ? asc(events[column])
               : desc(events[column])
             : desc(users.id)
-        )
-
+        );
 
       const total = await tx
         .select({
@@ -102,18 +138,18 @@ export async function getEvents(input: GetEventsSchema) {
         .from(events)
         .where(where)
         .execute()
-        .then((res) => res[0]?.count ?? 0)
+        .then((res) => res[0]?.count ?? 0);
 
       return {
         data,
         total,
-      }
-    })
+      };
+    });
 
-    const pageCount = Math.ceil(total / per_page)
-    return { data, pageCount }
+    const pageCount = Math.ceil(total / per_page);
+    return { data, pageCount };
   } catch (err) {
-    return { data: [], pageCount: 0 }
+    return { data: [], pageCount: 0 };
   }
 }
 
@@ -162,7 +198,9 @@ export async function addEvent({
   });
 }
 
-export async function updateEvent(input: UpdateEventSchema & { id: string; orgId: string }) {
+export async function updateEvent(
+  input: UpdateEventSchema & { id: string; orgId: string }
+) {
   noStore();
   return handleApiRequest(async () => {
     try {
@@ -176,7 +214,7 @@ export async function updateEvent(input: UpdateEventSchema & { id: string; orgId
             isInternalEvent: input.isInternalEvent,
             startDate: new Date(input.startDate!),
             endDate: new Date(input.endDate!),
-            location: input.location
+            location: input.location,
           })
           .where(eq(events.id, input.id))
           .returning({
@@ -202,7 +240,13 @@ export async function updateEvent(input: UpdateEventSchema & { id: string; orgId
   });
 }
 
-export async function deleteEvent({ eventId, orgId }: { eventId: string[], orgId: string }) {
+export async function deleteEvent({
+  eventId,
+  orgId,
+}: {
+  eventId: string[];
+  orgId: string;
+}) {
   return handleApiRequest(async () => {
     try {
       const res = await db.transaction(async (tx) => {
@@ -258,3 +302,62 @@ export async function toggleEventPublishStatus({
   });
 }
 
+export async function saveDescription({
+  description,
+  eventId,
+}: {
+  description: string;
+  eventId: string;
+}) {
+  return handleApiRequest(async () => {
+    const res = await db.transaction(async (tx) => {
+      const updatedEvent = await tx
+        .update(events)
+        .set({
+          description,
+        })
+        .where(eq(events.id, eventId))
+        .returning({
+          id: events.id,
+          description: events.description,
+        });
+
+      if (!updatedEvent.length) {
+        throw new Error("Event not found or update failed");
+      }
+
+      return updatedEvent[0];
+    });
+
+    revalidatePath(`/dashboard/organization`);
+
+    return res;
+  });
+}
+
+export async function markAttendance({
+  eventId,
+  participantId,
+  attended,
+  orgId
+}: {
+  eventId: string;
+  participantId: string;
+  attended: boolean;
+  orgId: string;
+}) {
+  noStore();
+  return handleApiRequest(async () => {
+    const res = await db.transaction(async (tx) => {
+      await tx.update(eventRegistrations).set({
+        attended,
+      }).where(and(eq(eventRegistrations.eventId, eventId), eq(eventRegistrations.userId, participantId)));
+    });
+
+    console.log(participantId, attended, eventId);
+
+    revalidatePath(`/dashboard/organization/${orgId}/events/${eventId}`);
+
+    return res;
+  });
+}
