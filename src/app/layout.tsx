@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import PlausibleProvider from "next-plausible";
 import NextTopLoader from "nextjs-toploader";
 import { Navbar } from "@/components/landing/Navbar";
+import { getUser } from "@/lib/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,11 +42,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getUser();
   return (
     <PlausibleProvider domain="neatngo.com">
       <ClerkProvider>
@@ -58,7 +60,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <NextTopLoader color="#808080" />
-              <Navbar />
+              <Navbar user={user} />
               {children}
               <Toaster />
             </ThemeProvider>

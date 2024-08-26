@@ -1,6 +1,6 @@
 "use client";
 
-import { type SelectUsers } from "@/db/schema";
+
 import { DownloadIcon } from "@radix-ui/react-icons";
 import { type Table } from "@tanstack/react-table";
 

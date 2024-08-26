@@ -34,11 +34,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { Icons } from "@/components/icons";
 
-import { updateEvent } from "../_lib/actions";
+import { saveDescription, updateEvent } from "../_lib/actions";
 import { Input } from "@/components/ui/input";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { EventResults } from "../_lib/type";
 import { updateEventSchema, type UpdateEventSchema } from "../_lib/validations";
 import {
@@ -48,31 +47,50 @@ import {
 } from "@/components/ui/popover";
 import { format, isBefore } from "date-fns";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Edit2, Link } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { formatEventType } from "../_lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { MinimalTiptapEditor } from "@/components/custom/minimal-tiptap";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Content } from "@tiptap/core";
+import SafeHTML from "@/components/safe-html";
 
 interface UpdateEventSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
   event: EventResults;
+  isServer?: boolean;
 }
 
-export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
+export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheetProps) {
   const [isUpdatePending, startUpdateTransition] = React.useTransition();
+  const [value, setValue] = React.useState("");
 
   const params = useParams<{ id: string }>();
+
+  const searchParams = useSearchParams();
+
+  const action = searchParams.get("action");
 
   const form = useForm<UpdateEventSchema>({
     resolver: zodResolver(updateEventSchema),
     defaultValues: {
       name: event.name ?? "",
       location: event.location ?? "",
-      description: event.description ?? "",
       isInternalEvent: event.isInternalEvent ?? false,
       eventType: event.eventType ?? "",
       startDate: (event.startDate as Date) ?? new Date(),
       endDate: (event.endDate as Date) ?? new Date(),
+      maxAttendees: event.maxAttendees ?? 0,
     },
   });
 
@@ -80,13 +98,19 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
     form.reset({
       name: event.name ?? "",
       location: event.location ?? "",
-      description: event.description ?? "",
       eventType: event.eventType ?? "",
       isInternalEvent: event.isInternalEvent ?? false,
       startDate: (event.startDate as Date) ?? new Date(),
       endDate: (event.endDate as Date) ?? new Date(),
+      maxAttendees: event.maxAttendees ?? 0,
     });
   }, [event, form]);
+
+  React.useEffect(() => {
+    if (action === 'editClose') {
+      props.onOpenChange?.(false);
+    }
+  }, [action, props]);
 
   function onSubmit(input: UpdateEventSchema) {
     startUpdateTransition(async () => {
@@ -107,11 +131,42 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
     });
   }
 
+  async function handleSaveDescription() {
+    const res = await saveDescription({
+      description: value,
+      eventId: event.id,
+    });
+
+    if (res.error) {
+      toast.error(res.error);
+      return;
+    }
+
+    toast.success("Description updated");
+  }
+
   return (
     <Sheet {...props}>
-      <SheetContent className="flex flex-col gap-6 sm:max-w-md overflow-auto">
+      <SheetContent className="flex flex-col gap-6 sm:max-w-md overflow-auto" isServer={isServer} href={`/dashboard/organization/${params.id}/events/${event.id}?action=editClose`}>
         <SheetHeader className="text-left">
-          <SheetTitle>Update Event</SheetTitle>
+          <SheetTitle>
+            Update Event
+            <Button
+              variant={"ghost"}
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `${
+                    process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
+                      ? "https://demo.neatngo.com/events/"
+                      : "https://neatngo.com/events/"
+                  }${event.id}`
+                );
+                toast.success("Event link copied to clipboard");
+              }}
+            >
+              <Link className="w-4 h-4" />
+            </Button>
+          </SheetTitle>
           <SheetDescription>
             Update the event details and save the changes
           </SheetDescription>
@@ -153,9 +208,58 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="" {...field} />
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          onClick={(e) => {
+                            e.preventDefault;
+                          }}
+                          variant={"ghost"}
+                        >
+                          <Edit2 className="" height={18} />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-h-screen overflow-auto sm:max-w-[700px]">
+                        <DialogHeader>
+                          <DialogTitle>Edit description</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex w-full">
+                          <MinimalTiptapEditor
+                            value={event.description}
+                            onChange={(value) => {
+                              setValue(value as string);
+                              form.setValue("description", value as string);
+                            }}
+                            throttleDelay={2000}
+                            className="w-full"
+                            editorContentClassName="p-5"
+                            output="html"
+                            placeholder="Type your description here..."
+                            autofocus={true}
+                            immediatelyRender={true}
+                            editable={true}
+                            injectCSS={true}
+                            editorClassName="focus:outline-none"
+                          />
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            onClick={() => {
+                              handleSaveDescription();
+                            }}
+                          >
+                            Save changes
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </FormControl>
-
+                  <div className="container mx-auto p-4 h-24 overflow-auto">
+                    <SafeHTML
+                      html={event.description ?? ""}
+                      className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl"
+                    />
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -202,7 +306,6 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
                   </FormControl>
 
                   <FormLabel>Internal event</FormLabel>
-               
                 </FormItem>
               )}
             />
@@ -286,6 +389,26 @@ export function UpdateEventSheet({ event, ...props }: UpdateEventSheetProps) {
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="maxAttendees"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Attendees</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Set the maximum number of attendees for this event. Leave as 0 for unlimited.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

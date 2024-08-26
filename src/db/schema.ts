@@ -1,6 +1,8 @@
 import { InferResultType } from "@/helper";
 import { createId } from "@paralleldrive/cuid2";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
+
+
 import {
   boolean,
   date,
@@ -11,6 +13,7 @@ import {
   integer,
   pgEnum,
   jsonb,
+  serial,
 } from "drizzle-orm/pg-core";
 
 // = = = = = = = = = = = = = = = = = = Enums = = = = = = = = = = = = = = = = = =
@@ -19,6 +22,7 @@ export const userRoleEnum = pgEnum("user_role", [
   "ADMIN",
   "MEMBER",
   "GUEST",
+  "ORG_OWNER",
 ]);
 
 export const membershipTypeEnum = pgEnum("membership_type", [
@@ -55,7 +59,6 @@ export const donationStatusEnum = pgEnum("donation_status", [
   "COMPLETED",
   "FAILED",
 ]);
-
 // = = = = = = = = = = = = = = = = = = Tables = = = = = = = = = = = = = = = = = =
 export const users = pgTable("users", {
   id: text("id")
@@ -64,9 +67,13 @@ export const users = pgTable("users", {
   email: text("email").unique().notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
+  phoneNumber: text("phone_number").default(""),
   subscriptionTier: subscriptionTierEnum("subscription_tier")
     .default("FREE")
     .notNull(),
+  role: userRoleEnum("role").default("GUEST").notNull(),
+  emailVerified: boolean("email_verified").default(false),
+  password: text("password").default(""),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -209,6 +216,25 @@ export const donors = pgTable("donors", {
   country: text("country"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const sessions = pgTable("session", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date"
+  }).notNull()
+});
+
+export const emailVerificationCodes = pgTable("email_verification_codes", {
+  id: serial("id").primaryKey(),
+  code: text("code").notNull(),
+  userId: text("user_id").notNull().unique().references(() => users.id),
+  email: text("email").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
 });
 
 // = = = = = = = = = = = = = = = = = = Relations = = = = = = = = = = = = = = = = = =

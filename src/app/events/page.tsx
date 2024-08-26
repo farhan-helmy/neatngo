@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { events } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import { EventListing } from "./_components/EventsListing";
+
 
 export default async function EventsPage() {
   const eventData = await db.query.events.findMany({
@@ -11,7 +11,6 @@ export default async function EventsPage() {
     },
   });
 
-  console.log(eventData);
   return (
     <div>
       <div>all events page</div>

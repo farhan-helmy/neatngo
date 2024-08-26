@@ -35,7 +35,7 @@ export function MembersTable({ membersPromise }: MembersTableProps) {
    * @prop {React.ReactNode} [icon] - An optional icon to display next to the label.
    * @prop {boolean} [withCount] - An optional boolean to display the count of the filter option.
    */
-  const filterFields: DataTableFilterField<SelectUsers>[] = [
+  const filterFields: DataTableFilterField<Omit<SelectUsers, "password" | "phoneNumber">>[] = [
     {
       label: "Email",
       value: "email",

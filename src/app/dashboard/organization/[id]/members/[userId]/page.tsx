@@ -53,7 +53,7 @@ export default async function ViewMemberPage({
               src={`https://api.dicebear.com/6.x/bottts-neutral/svg?seed=${params.userId}`}
               alt={params.userId}
             />
-            <AvatarFallback>{person?.firstName?.charAt(0)}</AvatarFallback>
+            {/* <AvatarFallback>{person?.firstName?.charAt(0)}</AvatarFallback> */}
           </Avatar>
           <div>
             <h1 className="font-bold text-center">{person?.firstName}</h1>

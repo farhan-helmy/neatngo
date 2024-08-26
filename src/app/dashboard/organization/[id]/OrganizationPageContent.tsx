@@ -1,20 +1,12 @@
 "use client";
 import Link from "next/link";
 import {
-  Activity,
   ArrowUpRight,
   CalendarDaysIcon,
-  CircleUser,
-  CreditCard,
-  DollarSign,
-  Menu,
-  Package2,
-  Search,
+  
   Users,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,16 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
 import {
   Table,
   TableBody,
@@ -42,9 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  MembershipsWithUser,
-  SelectMemberships,
-  SelectUsers,
+  MembershipsWithUser
 } from "@/db/schema";
 import { formatDate } from "@/helper";
 import { useParams } from "next/navigation";
