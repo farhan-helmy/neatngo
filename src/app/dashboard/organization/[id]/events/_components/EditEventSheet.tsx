@@ -90,6 +90,7 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
       eventType: event.eventType ?? "",
       startDate: (event.startDate as Date) ?? new Date(),
       endDate: (event.endDate as Date) ?? new Date(),
+      maxAttendees: event.maxAttendees ?? 0,
     },
   });
 
@@ -101,14 +102,15 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
       isInternalEvent: event.isInternalEvent ?? false,
       startDate: (event.startDate as Date) ?? new Date(),
       endDate: (event.endDate as Date) ?? new Date(),
+      maxAttendees: event.maxAttendees ?? 0,
     });
   }, [event, form]);
 
-  // React.useEffect(() => {
-  //   if (action === 'editClose') {
-  //     props.onOpenChange?.(false);
-  //   }
-  // }, [action, props]);
+  React.useEffect(() => {
+    if (action === 'editClose') {
+      props.onOpenChange?.(false);
+    }
+  }, [action, props]);
 
   function onSubmit(input: UpdateEventSchema) {
     startUpdateTransition(async () => {
@@ -387,6 +389,26 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="maxAttendees"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Attendees</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Set the maximum number of attendees for this event. Leave as 0 for unlimited.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

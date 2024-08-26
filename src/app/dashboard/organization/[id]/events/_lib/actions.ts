@@ -215,6 +215,7 @@ export async function updateEvent(
             startDate: new Date(input.startDate!),
             endDate: new Date(input.endDate!),
             location: input.location,
+            maxAttendees: input.maxAttendees,
           })
           .where(eq(events.id, input.id))
           .returning({
