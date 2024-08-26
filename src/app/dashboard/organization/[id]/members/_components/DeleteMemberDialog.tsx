@@ -35,7 +35,7 @@ import { useParams } from "next/navigation";
 
 interface DeleteTasksDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
-  users: Row<SelectUsers>["original"][];
+  users: Omit<Row<SelectUsers>["original"], "password" | "phoneNumber">[];
   showTrigger?: boolean;
   onSuccess?: () => void;
 }

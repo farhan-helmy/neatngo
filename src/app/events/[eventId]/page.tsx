@@ -5,7 +5,6 @@ import { Calendar, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getUser } from "@/lib/auth";
-import { toast } from "sonner";
 
 export default async function EventPage({
   params,
@@ -18,7 +17,10 @@ export default async function EventPage({
   const user = await getUser();
 
   if (user) {
-    const res = await checkUserRSVPd({ eventId: params.eventId, userId: user.id });
+    const res = await checkUserRSVPd({
+      eventId: params.eventId,
+      userId: user.id,
+    });
 
     if (res.error) {
       userHasRSVPd = false;
@@ -28,8 +30,6 @@ export default async function EventPage({
       }
     }
   }
-
-  console.log(eventData)
 
   if (!eventData.data?.event || eventData.error || eventData.data === null) {
     return (
@@ -54,8 +54,11 @@ export default async function EventPage({
     <Layout>
       <LayoutHeader></LayoutHeader>
       <LayoutBody>
-        <ViewEvent event={eventData.data} user={user} userHasRSVPd={userHasRSVPd} />
-
+        <ViewEvent
+          event={eventData.data}
+          user={user}
+          userHasRSVPd={userHasRSVPd}
+        />
       </LayoutBody>
     </Layout>
   );

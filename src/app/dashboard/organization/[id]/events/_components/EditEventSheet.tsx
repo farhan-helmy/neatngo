@@ -104,11 +104,11 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
     });
   }, [event, form]);
 
-  React.useEffect(() => {
-    if (action === 'editClose') {
-      props.onOpenChange?.(false);
-    }
-  }, [action, props]);
+  // React.useEffect(() => {
+  //   if (action === 'editClose') {
+  //     props.onOpenChange?.(false);
+  //   }
+  // }, [action, props]);
 
   function onSubmit(input: UpdateEventSchema) {
     startUpdateTransition(async () => {
@@ -145,7 +145,7 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
 
   return (
     <Sheet {...props}>
-      <SheetContent className="flex flex-col gap-6 sm:max-w-md overflow-auto" isServer={isServer} href={`/dashboard/organization/${params.id}/events/${event.id}?action=editClose`}>
+      <SheetContent className="flex flex-col gap-6 sm:max-w-md overflow-auto">
         <SheetHeader className="text-left">
           <SheetTitle>
             Update Event

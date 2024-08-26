@@ -152,7 +152,7 @@ export default function ViewEvent({
                                 src={`https://api.dicebear.com/6.x/bottts-neutral/svg?seed=${attendee.user.subscriptionTier}`}
                                 alt="userpic"
                               />
-                              <AvatarFallback>N</AvatarFallback>
+                              {/* <AvatarFallback>N</AvatarFallback> */}
                             </Avatar>
                           ))}
                       </div>

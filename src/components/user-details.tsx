@@ -2,6 +2,7 @@
 
 import { formatDate, formatDateWithNumbers } from "@/helper";
 import { useOrganization, useSession, useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 function Row({
   desc,
@@ -49,7 +50,7 @@ export function UserDetails() {
       <div className="p-8 rounded-xl bg-white shadow-[0_5px_15px_rgba(0,0,0,0.08),0_15px_35px_-5px_rgba(25,28,33,0.2)] ring-1 ring-gray-950/5 max-w-[25rem]">
         <div className="flex flex-col items-center gap-2 mb-6">
           <div className="w-full relative flex justify-center">
-            <img src={user.imageUrl} className="size-20 rounded-full" />
+            <Image height={20} width={20} src={user.imageUrl} className="size-20 rounded-full" alt="nah-fam" />
             <div className="absolute w-fit flex items-center gap-5 top-1/2 -translate-x-2.5 -translate-y-1/2 left-full">
               <div className="relative">
                 <div className="h-px bg-[#BFBFC4] w-[6.5rem]" />

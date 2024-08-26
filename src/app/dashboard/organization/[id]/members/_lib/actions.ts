@@ -63,7 +63,9 @@ export async function getMembers(input: GetMembersSchema) {
           createdAt: users.createdAt,
           updatedAt: users.updatedAt,
           isActive: memberships.isActive,
-          membershipId: memberships.id
+          membershipId: memberships.id,
+          role: users.role,
+          emailVerified: users.emailVerified,
         })
         .from(users)
         .limit(per_page)

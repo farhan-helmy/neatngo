@@ -1,6 +1,6 @@
 "use server";
 
-import { hash, verify } from "@node-rs/argon2";
+import bcrypt from "bcrypt";
 import { generateIdFromEntropySize } from "lucia";
 import { validateUserCredentials } from "./validation";
 import { lucia } from "@/auth";
@@ -47,12 +47,7 @@ export async function loginPublicUser({
             throw new Error("User does not exists");
         }
 
-        const validPassword = await verify(existingUser.password, password, {
-            memoryCost: 19456,
-            timeCost: 2,
-            outputLen: 32,
-            parallelism: 1,
-        });
+        const validPassword = await bcrypt.compare(password, existingUser.password);
         if (!validPassword) {
             throw new Error("Invalid password");
         }
@@ -89,13 +84,8 @@ export async function registerPublicUser({
             password,
         });
 
-        const passwordHash = await hash(result.password, {
-            // recommended minimum parameters
-            memoryCost: 19456,
-            timeCost: 2,
-            outputLen: 32,
-            parallelism: 1,
-        });
+        const saltRounds = 10;
+        const passwordHash = await bcrypt.hash(result.password, saltRounds);
 
         const userId = generateIdFromEntropySize(10);
 
@@ -197,7 +187,7 @@ async function sendEmailVerificationCode({ email, code }: { email: string, code:
 export async function verifyVerificationCode({ code }: { code: string }) {
     return handleApiRequest(async () => {
         const user = await validateRequest()
-        console.log(user)
+     
 
         if (!user || !user.user?.id) {
             throw new Error("Unauthorized");

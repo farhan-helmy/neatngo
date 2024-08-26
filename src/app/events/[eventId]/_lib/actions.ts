@@ -39,8 +39,6 @@ export async function getEvent({ eventId }: { eventId: string }) {
         },
       });
 
-      console.log(registrations);
-
       return { event, registrations };
     });
     return eventData;
