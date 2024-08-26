@@ -145,7 +145,7 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
 
   return (
     <Sheet {...props}>
-      <SheetContent className="flex flex-col gap-6 sm:max-w-md overflow-auto">
+      <SheetContent className="flex flex-col gap-6 sm:max-w-md overflow-auto" isServer={isServer} href={`/dashboard/organization/${params.id}/events/${event.id}?action=editClose`}>
         <SheetHeader className="text-left">
           <SheetTitle>
             Update Event
