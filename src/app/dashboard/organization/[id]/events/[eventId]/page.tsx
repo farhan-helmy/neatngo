@@ -8,8 +8,10 @@ import { ViewEventPage } from "../_components/ViewEventPage";
 
 export default async function ViewEventPageWrapper({
   params,
+  searchParams,
 }: {
   params: { id: string; eventId: string };
+  searchParams: { action?: "edit" };
 }) {
   const event = await db.query.events.findFirst({
     where: eq(events.id, params.eventId),
@@ -29,16 +31,16 @@ export default async function ViewEventPageWrapper({
     },
   });
 
-  const attendeesForProps = attendees.map((attendee) => ({
+  const attendeesForProps = attendees.map(attendee => ({
     ...attendee,
     registrationDate: attendee.registrationDate.toISOString(),
     attended: attendee.attended ?? false, // Ensure attended is always boolean
   }));
 
-  const participants = attendees.map((attendee) => ({
+  const participants = attendees.map(attendee => ({
     id: attendee.userId,
     email: attendee.user.email,
-    attended: attendee.attended ?? false,
+    attended: attendee.attended ?? false
   }));
 
   const eventForProps = {
@@ -49,13 +51,13 @@ export default async function ViewEventPageWrapper({
 
   return (
     <Layout>
-      {/* <UpdateEventSheet event={event} open={searchParams.action === "edit"} isServer={true} /> */}
-      {/* <ViewEventPage
+      <UpdateEventSheet event={event} open={searchParams.action === "edit"} isServer={true} />
+      <ViewEventPage
         event={eventForProps}
         attendees={attendeesForProps}
         participants={participants}
         organizationId={params.id}
-      /> */}
+      />
     </Layout>
   );
 }
