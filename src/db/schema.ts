@@ -59,6 +59,13 @@ export const donationStatusEnum = pgEnum("donation_status", [
   "COMPLETED",
   "FAILED",
 ]);
+
+export const grantStatusEnum = pgEnum("grant_status", [
+  "ACTIVE",
+  "COMPLETED",
+  "PENDING",
+]);
+
 // = = = = = = = = = = = = = = = = = = Tables = = = = = = = = = = = = = = = = = =
 export const users = pgTable("users", {
   id: text("id")
@@ -237,6 +244,40 @@ export const emailVerificationCodes = pgTable("email_verification_codes", {
   expiresAt: timestamp("expires_at").notNull(),
 });
 
+export const grants = pgTable("grants", {
+  id: text("id").$defaultFn(() => createId()).primaryKey(),
+  organizationId: text("organization_id").notNull().references(() => organizations.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  totalAmount: integer("total_amount").notNull(),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  status: grantStatusEnum("status").default("ACTIVE").notNull(),
+  category: text("category"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const grantAllocations = pgTable("grant_allocations", {
+  id: text("id").$defaultFn(() => createId()).primaryKey(),
+  grantId: text("grant_id").notNull().references(() => grants.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  amount: integer("amount").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const grantTransactions = pgTable("grant_transactions", {
+  id: text("id").$defaultFn(() => createId()).primaryKey(),
+  grantId: text("grant_id").notNull().references(() => grants.id, { onDelete: "cascade" }),
+  allocationId: text("allocation_id").notNull().references(() => grantAllocations.id, { onDelete: "cascade" }),
+  description: text("description").notNull(),
+  amount: integer("amount").notNull(),
+  transactionDate: timestamp("transaction_date").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // = = = = = = = = = = = = = = = = = = Relations = = = = = = = = = = = = = = = = = =
 export const usersRelations = relations(users, ({ many }) => ({
   memberships: many(memberships),
@@ -254,6 +295,7 @@ export const organizationsRelations = relations(
     memberships: many(memberships),
     customFields: many(customFields),
     events: many(events),
+    grants: many(grants),
   })
 );
 
@@ -316,6 +358,34 @@ export const donationsRelations = relations(donations, ({ one }) => ({
   }),
 }));
 
+export const grantsRelations = relations(grants, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [grants.organizationId],
+    references: [organizations.id],
+  }),
+  allocations: many(grantAllocations),
+  transactions: many(grantTransactions),
+}));
+
+export const grantAllocationsRelations = relations(grantAllocations, ({ one, many }) => ({
+  grant: one(grants, {
+    fields: [grantAllocations.grantId],
+    references: [grants.id],
+  }),
+  transactions: many(grantTransactions),
+}));
+
+export const grantTransactionsRelations = relations(grantTransactions, ({ one }) => ({
+  grant: one(grants, {
+    fields: [grantTransactions.grantId],
+    references: [grants.id],
+  }),
+  allocation: one(grantAllocations, {
+    fields: [grantTransactions.allocationId],
+    references: [grantAllocations.id],
+  }),
+}));
+
 export type SelectEvent = typeof events.$inferSelect;
 export type SelectMemberships = typeof memberships.$inferSelect;
 
@@ -340,3 +410,15 @@ export type EventWithOrganization = InferResultType<
   "events",
   { organization: true }
 >;
+
+export type SelectGrant = typeof grants.$inferSelect;
+
+export type InsertGrant = typeof grants.$inferInsert;
+
+export type InsertGrantAllocation = typeof grantAllocations.$inferInsert;
+
+export type SelectTransactions = typeof grantTransactions.$inferSelect;
+
+export type InsertTransactions = typeof grantTransactions.$inferInsert;
+
+export type SelectGrantAllocation = typeof grantAllocations.$inferSelect;

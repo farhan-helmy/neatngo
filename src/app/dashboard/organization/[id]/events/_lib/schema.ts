@@ -36,14 +36,8 @@ export const eventFormSchema = z
             message: "Description must be less than 1000 characters",
         }),
         eventType: z.enum(eventTypeEnum["enumValues"]),
-        startDate: z.date({
-            required_error: "Start date is required",
-            invalid_type_error: "That's not a valid date",
-        }),
-        endDate: z.date({
-            required_error: "End date is required",
-            invalid_type_error: "That's not a valid date",
-        }),
+        startDate: z.string(),
+        endDate: z.string(),
         location: z.string({
             required_error: "Location is required",
         }),

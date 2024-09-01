@@ -179,7 +179,14 @@ export function ViewEventPage({ event, attendees, participants, organizationId }
                                             <Clock className="h-5 w-5 mr-2 text-primary" />
                                             <div>
                                                 <div className="font-semibold">Duration</div>
-                                                <div className="text-xs">{format(new Date(event.endDate).getTime() - new Date(event.startDate).getTime(), 'H:mm')} hours</div>
+                                                <div className="text-xs">
+                                                    {(() => {
+                                                        const duration = new Date(event.endDate).getTime() - new Date(event.startDate).getTime();
+                                                        const hours = Math.floor(duration / (1000 * 60 * 60));
+                                                        const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+                                                        return `${hours}h ${minutes}m`;
+                                                    })()}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
