@@ -15,12 +15,11 @@ import {
   FormItem,
   FormLabel,
   FormControl,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { useLoading } from "@/hooks/useLoading";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, PlusCircleIcon, PlusIcon, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,7 +35,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { format, isBefore } from "date-fns";
+import { format, isBefore, set, parseISO } from "date-fns";
 import {
   Select,
   SelectContent,
@@ -66,8 +65,8 @@ export function AddEventForm() {
       description: "",
       location: "",
       maxAttendees: 1,
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
     },
   });
 
@@ -77,8 +76,8 @@ export function AddEventForm() {
         name: values.name,
         description: values.description,
         eventType: values.eventType,
-        startDate: new Date(values.startDate),
-        endDate: new Date(values.endDate),
+        startDate: parseISO(values.startDate),
+        endDate: parseISO(values.endDate),
         location: values.location,
         maxAttendees: values.maxAttendees,
         organizationId: params.id as string,
@@ -121,20 +120,6 @@ export function AddEventForm() {
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Event Description" {...field} />
-                  </FormControl>
-                  <FormDescription>Event&apos;s description.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
@@ -198,7 +183,7 @@ export function AddEventForm() {
                 name="startDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Start Date</FormLabel>
+                    <FormLabel>Start Date and Time</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -210,9 +195,9 @@ export function AddEventForm() {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(parseISO(new Date(field.value).toISOString()), "PPP HH:mm")
                             ) : (
-                              <span>Pick a date</span>
+                              <span>Pick a date and time</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -221,11 +206,40 @@ export function AddEventForm() {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date < new Date("1900-01-01")}
+                          selected={field.value ? parseISO(new Date(field.value).toISOString()) : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              const currentTime = field.value ? parseISO(new Date(field.value).toISOString()) : new Date();
+                              const newDate = set(date, {
+                                hours: currentTime.getHours(),
+                                minutes: currentTime.getMinutes(),
+                              });
+                              field.onChange(newDate.toISOString());
+                            }
+                          }}
+                          disabled={(date) => {
+                            const startDate = form.getValues("startDate");
+                            return (
+                              date < new Date("1900-01-01") ||
+                              (new Date(startDate) && isBefore(date, parseISO(startDate)))
+                            );
+                          }}
                           initialFocus
                         />
+                        <div className="p-3 border-t">
+                          <Input
+                            type="time"
+                            onChange={(e) => {
+                              const [hours, minutes] = e.target.value.split(':');
+                              const newDate = set(parseISO(new Date(field.value).toISOString()), {
+                                hours: parseInt(hours),
+                                minutes: parseInt(minutes),
+                              });
+                              field.onChange(newDate.toISOString());
+                            }}
+                            value={field.value ? format(parseISO(new Date(field.value).toISOString()), 'HH:mm') : ''}
+                          />
+                        </div>
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -237,7 +251,7 @@ export function AddEventForm() {
                 name="endDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>End Date</FormLabel>
+                    <FormLabel>End Date and Time</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -249,9 +263,9 @@ export function AddEventForm() {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(parseISO(new Date(field.value).toISOString()), "PPP HH:mm")
                             ) : (
-                              <span>Pick a date</span>
+                              <span>Pick a date and time</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -260,17 +274,40 @@ export function AddEventForm() {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
+                          selected={field.value ? parseISO(new Date(field.value).toISOString()) : undefined}
+                          onSelect={(date) => {
+                            if (date) {
+                              const currentTime = field.value ? parseISO(new Date(field.value).toISOString()) : new Date();
+                              const newDate = set(date, {
+                                hours: currentTime.getHours(),
+                                minutes: currentTime.getMinutes(),
+                              });
+                              field.onChange(newDate.toISOString());
+                            }
+                          }}
                           disabled={(date) => {
                             const startDate = form.getValues("startDate");
                             return (
                               date < new Date("1900-01-01") ||
-                              (startDate && isBefore(date, startDate))
+                              (new Date(startDate) && isBefore(date, parseISO(startDate)))
                             );
                           }}
                           initialFocus
                         />
+                        <div className="p-3 border-t">
+                          <Input
+                            type="time"
+                            onChange={(e) => {
+                              const [hours, minutes] = e.target.value.split(':');
+                              const newDate = set(parseISO(new Date(field.value).toISOString()), {
+                                hours: parseInt(hours),
+                                minutes: parseInt(minutes),
+                              });
+                              field.onChange(newDate.toISOString());
+                            }}
+                            value={field.value ? format(parseISO(new Date(field.value).toISOString()), 'HH:mm') : ''}
+                          />
+                        </div>
                       </PopoverContent>
                     </Popover>
                     <FormMessage />

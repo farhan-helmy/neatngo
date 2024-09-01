@@ -134,6 +134,27 @@
       "when": 1724510844334,
       "tag": "0023_careless_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1724664228714,
+      "tag": "0024_clumsy_maelstrom",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1724687119771,
+      "tag": "0025_right_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1725177623586,
+      "tag": "0026_rainy_grim_reaper",
+      "breakpoints": true
     }
   ]
 }

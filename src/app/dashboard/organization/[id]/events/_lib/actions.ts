@@ -249,18 +249,15 @@ export async function deleteEvent({
   orgId: string;
 }) {
   return handleApiRequest(async () => {
-    try {
-      const res = await db.transaction(async (tx) => {
-        await tx.delete(events).where(inArray(events.id, eventId));
-      });
 
-      revalidatePath(`/dashboard/organization/${orgId}/events`);
+    const res = await db.transaction(async (tx) => {
+      await tx.delete(events).where(inArray(events.id, eventId));
+    });
 
-      return res;
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      throw error;
-    }
+    revalidatePath(`/dashboard/organization/${orgId}/events`);
+
+    return res;
+
   });
 }
 

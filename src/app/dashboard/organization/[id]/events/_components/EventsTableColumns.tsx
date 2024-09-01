@@ -3,16 +3,12 @@
 import * as React from "react";
 import {
   events,
-  users,
-  UserWithMemberships,
-  type SelectUsers,
 } from "@/db/schema";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { type ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
 
 import { formatDate } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -81,12 +77,11 @@ export function getColumns(): ColumnDef<EventResults>[] {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex w-[6.25rem] items-center">
+              <div className="grid grid-cols-3 w-24 items-center">
                 <MapPinnedIcon
-                  className="mr-2 size-4 text-muted-foreground"
-                  aria-hidden="true"
+                  className="mr-2 h-4 w-4 text-muted-foreground"
                 />
-                <div className="truncate">{row.getValue("location")}</div>
+                <div className="truncate col-span-2">{row.getValue("location")}</div>
               </div>
             </TooltipTrigger>
             <TooltipContent>

@@ -4,7 +4,7 @@ import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { CalendarClock, Cog, MenuIcon, PersonStanding } from "lucide-react";
+import { Banknote, CalendarClock, Cog, MenuIcon, PersonStanding } from "lucide-react";
 import { useState } from "react";
 import { NavItem } from "@/types";
 import { Dispatch, SetStateAction } from "react";
@@ -76,6 +76,17 @@ function SideBar() {
                     >
                       <CalendarClock className="mr-2 h-4 w-4" />
                       <span>Events</span>
+                    </span>
+                  </Link>
+                  <Link href={`/dashboard/organization/${params.id}/grant`}>
+                    <span
+                      className={cn(
+                        "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                        path.includes("grant") ? "bg-accent" : "transparent"
+                      )}
+                    >
+                      <Banknote className="mr-2 h-4 w-4" />
+                      <span>Grant</span>
                     </span>
                   </Link>
                   <Link href={`/dashboard/organization/${params.id}/edit`}>
