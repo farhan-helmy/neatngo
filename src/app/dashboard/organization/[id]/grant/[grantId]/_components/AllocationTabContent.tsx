@@ -236,7 +236,7 @@ export function AllocationTabContent({ allocation }: { allocation: SelectGrantAl
                     </>
                 ) : (
                     <div className="text-center py-8">
-                        <p className="text-muted-foreground">No allocations yet. Click 'Add Allocation' to get started.</p>
+                        <p className="text-muted-foreground">No allocations yet. Click &apos;Add Allocation&apos; to get started.</p>
                     </div>
                 )}
             </CardContent>
