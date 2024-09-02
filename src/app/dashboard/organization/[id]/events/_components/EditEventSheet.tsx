@@ -344,7 +344,7 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
                             field.onChange(newDate);
                           }
                         }}
-                        disabled={(date) => date < new Date("1900-01-01")}
+
                         initialFocus
                       />
                       <div className="p-3 border-t">
@@ -406,13 +406,7 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
                             field.onChange(newDate);
                           }
                         }}
-                        disabled={(date) => {
-                          const startDate = form.getValues("startDate");
-                          return (
-                            date < new Date("1900-01-01") ||
-                            (startDate && isBefore(date, startDate))
-                          );
-                        }}
+
                         initialFocus
                       />
                       <div className="p-3 border-t">
