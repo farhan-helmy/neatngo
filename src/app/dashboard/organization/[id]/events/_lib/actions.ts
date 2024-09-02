@@ -172,6 +172,10 @@ export async function addEvent({
   location: string;
   maxAttendees: number;
 }) {
+  if (endDate < startDate) {
+    throw new Error("Event end date cannot be before start date");
+  }
+
   return handleApiRequest(async () => {
     const res = await db.transaction(async (tx) => {
       const event = await tx
@@ -204,6 +208,13 @@ export async function updateEvent(
   noStore();
   return handleApiRequest(async () => {
     try {
+      const startDate = new Date(input.startDate!);
+      const endDate = new Date(input.endDate!);
+
+      if (endDate < startDate) {
+        throw new Error("Event end date cannot be before start date");
+      }
+
       const res = await db.transaction(async (tx) => {
         const updatedEvent = await tx
           .update(events)
@@ -212,8 +223,8 @@ export async function updateEvent(
             description: input.description,
             eventType: input.eventType,
             isInternalEvent: input.isInternalEvent,
-            startDate: new Date(input.startDate!),
-            endDate: new Date(input.endDate!),
+            startDate,
+            endDate,
             location: input.location,
             maxAttendees: input.maxAttendees,
           })
