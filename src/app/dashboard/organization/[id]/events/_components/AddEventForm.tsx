@@ -217,13 +217,6 @@ export function AddEventForm() {
                               field.onChange(newDate.toISOString());
                             }
                           }}
-                          disabled={(date) => {
-                            const startDate = form.getValues("startDate");
-                            return (
-                              date < new Date("1900-01-01") ||
-                              (new Date(startDate) && isBefore(date, parseISO(startDate)))
-                            );
-                          }}
                           initialFocus
                         />
                         <div className="p-3 border-t">
@@ -285,13 +278,7 @@ export function AddEventForm() {
                               field.onChange(newDate.toISOString());
                             }
                           }}
-                          disabled={(date) => {
-                            const startDate = form.getValues("startDate");
-                            return (
-                              date < new Date("1900-01-01") ||
-                              (new Date(startDate) && isBefore(date, parseISO(startDate)))
-                            );
-                          }}
+
                           initialFocus
                         />
                         <div className="p-3 border-t">

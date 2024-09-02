@@ -29,11 +29,10 @@ import {
   SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
+
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
 
 import { saveDescription, updateEvent } from "../_lib/actions";
 import { Input } from "@/components/ui/input";
@@ -45,7 +44,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format, isBefore } from "date-fns";
+import { format, isBefore, set } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, Edit2, Link } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -56,13 +55,11 @@ import { MinimalTiptapEditor } from "@/components/custom/minimal-tiptap";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Content } from "@tiptap/core";
 import SafeHTML from "@/components/safe-html";
 
 interface UpdateEventSheetProps
@@ -155,10 +152,9 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
               variant={"ghost"}
               onClick={() => {
                 navigator.clipboard.writeText(
-                  `${
-                    process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
-                      ? "https://demo.neatngo.com/events/"
-                      : "https://neatngo.com/events/"
+                  `${process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
+                    ? "https://demo.neatngo.com/events/"
+                    : "https://neatngo.com/events/"
                   }${event.id}`
                 );
                 toast.success("Event link copied to clipboard");
@@ -314,7 +310,7 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
               name="startDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Start Date</FormLabel>
+                  <FormLabel>Start Date and Time</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -326,9 +322,9 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "PPP p")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Pick a date and time</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -338,10 +334,33 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date("1900-01-01")}
+                        onSelect={(date) => {
+                          if (date) {
+                            const currentTime = field.value ? new Date(field.value) : new Date();
+                            const newDate = set(date, {
+                              hours: currentTime.getHours(),
+                              minutes: currentTime.getMinutes(),
+                            });
+                            field.onChange(newDate);
+                          }
+                        }}
+
                         initialFocus
                       />
+                      <div className="p-3 border-t">
+                        <Input
+                          type="time"
+                          onChange={(e) => {
+                            const [hours, minutes] = e.target.value.split(':');
+                            const newDate = set(new Date(field.value), {
+                              hours: parseInt(hours),
+                              minutes: parseInt(minutes),
+                            });
+                            field.onChange(newDate);
+                          }}
+                          value={field.value ? format(new Date(field.value), 'HH:mm') : ''}
+                        />
+                      </div>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
@@ -353,7 +372,7 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
               name="endDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>End Date</FormLabel>
+                  <FormLabel>End Date and Time</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -365,9 +384,9 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "PPP p")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Pick a date and time</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -377,16 +396,33 @@ export function UpdateEventSheet({ event, isServer, ...props }: UpdateEventSheet
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => {
-                          const startDate = form.getValues("startDate");
-                          return (
-                            date < new Date("1900-01-01") ||
-                            (startDate && isBefore(date, startDate))
-                          );
+                        onSelect={(date) => {
+                          if (date) {
+                            const currentTime = field.value ? new Date(field.value) : new Date();
+                            const newDate = set(date, {
+                              hours: currentTime.getHours(),
+                              minutes: currentTime.getMinutes(),
+                            });
+                            field.onChange(newDate);
+                          }
                         }}
+
                         initialFocus
                       />
+                      <div className="p-3 border-t">
+                        <Input
+                          type="time"
+                          onChange={(e) => {
+                            const [hours, minutes] = e.target.value.split(':');
+                            const newDate = set(new Date(field.value), {
+                              hours: parseInt(hours),
+                              minutes: parseInt(minutes),
+                            });
+                            field.onChange(newDate);
+                          }}
+                          value={field.value ? format(new Date(field.value), 'HH:mm') : ''}
+                        />
+                      </div>
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
