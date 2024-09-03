@@ -7,7 +7,7 @@ import { lucia } from "@/auth";
 import { cookies } from "next/headers";
 import { handleApiRequest } from "@/helper";
 import { db } from "@/db";
-import { emailVerificationCodes, users } from "@/db/schema";
+import { emailVerificationCodes, events, guestEventRegistrations, guests, users } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { TimeSpan, createDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
@@ -15,6 +15,7 @@ import { Resend } from "resend"
 import VerificationEmail from "@/components/emails/verificationEmail"
 import { validateRequest } from "@/lib/auth";
 import { isWithinExpirationDate } from "oslo";
+import EventTicket from "../emails/guestTicketEmail";
 
 
 
@@ -187,7 +188,7 @@ async function sendEmailVerificationCode({ email, code }: { email: string, code:
 export async function verifyVerificationCode({ code }: { code: string }) {
     return handleApiRequest(async () => {
         const user = await validateRequest()
-     
+
 
         if (!user || !user.user?.id) {
             throw new Error("Unauthorized");
@@ -223,4 +224,114 @@ export async function verifyVerificationCode({ code }: { code: string }) {
     });
 
 
+}
+
+export async function registerGuest({
+    name,
+    email,
+    phoneNumber,
+    eventId,
+}: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+    eventId: string;
+}) {
+    return handleApiRequest(async () => {
+        const phoneRegex = /^(\+?6?01)[02-46-9]-*[0-9]{7}$|^(\+?6?01)[1]-*[0-9]{8}$/;
+        if (!phoneRegex.test(phoneNumber)) {
+            throw new Error("Phone number is not valid");
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            throw new Error("Email is not valid");
+        }
+
+        const { guest, event } = await db.transaction(async (tx) => {
+            // Check if the user has already registered for this event
+            const getGuestId = await tx.query.guests.findFirst({
+                where: eq(guests.email, email),
+                columns: {
+                    id: true
+                }
+            });
+
+            const existingRegistration = await tx.query.guestEventRegistrations.findFirst({
+                where: and(
+                    eq(guestEventRegistrations.eventId, eventId),
+                    eq(guestEventRegistrations.guestId, getGuestId?.id ?? "")
+                ),
+            });
+
+            if (existingRegistration) {
+                throw new Error("You have already RSVPed to this event");
+            }
+
+            // Check if the email exists in any other event
+            const existingGuest = await tx.query.guests.findFirst({
+                where: eq(guests.email, email)
+            });
+
+            let guestId;
+
+            if (existingGuest) {
+                // Email exists, use existing guest
+                guestId = existingGuest.id;
+            } else {
+                // New guest, insert new record
+                const newGuest = await tx.insert(guests).values({
+                    name,
+                    email,
+                    phoneNumber,
+                }).returning({
+                    id: guests.id
+                });
+                guestId = newGuest[0].id;
+            }
+
+            // Create new event registration
+            await tx.insert(guestEventRegistrations).values({
+                guestId,
+                eventId,
+            });
+
+            // Query for guest and event data
+            const guest = await tx.query.guests.findFirst({
+                where: eq(guests.id, guestId)
+            });
+
+            const event = await tx.query.events.findFirst({
+                where: eq(events.id, eventId)
+            });
+
+            return { guest, event };
+        });
+
+        if (!guest || !event) {
+            throw new Error("Failed to retrieve guest or event data");
+        }
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        try {
+            const res = await resend.emails.send({
+                from: 'no-reply@neatngo.com',
+                to: email,
+                subject: 'Event Ticket',
+                react: EventTicket({
+                    eventName: event.name,
+                    attendeeName: guest.name,
+                    attendeeEmail: guest.email ?? "",
+                    ticketNumber: guest.id,
+                    qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${guest.id}`,
+                    eventDate: event.startDate.toISOString(),
+                    eventLocation: event.location ?? ""
+                }),
+            });
+        } catch (error) {
+            console.error("Failed to send email:", error);
+        }
+
+        return guest;
+    });
 }

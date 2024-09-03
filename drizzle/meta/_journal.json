@@ -155,6 +155,41 @@
       "when": 1725177623586,
       "tag": "0026_rainy_grim_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1725380973929,
+      "tag": "0027_fixed_daimon_hellstrom",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1725381018327,
+      "tag": "0028_groovy_piledriver",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1725381038245,
+      "tag": "0029_known_cammi",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1725381060388,
+      "tag": "0030_dapper_starjammers",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1725381218371,
+      "tag": "0031_puzzling_tenebrous",
+      "breakpoints": true
     }
   ]
 }

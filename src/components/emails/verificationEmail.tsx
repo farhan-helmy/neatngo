@@ -25,7 +25,7 @@ import {
         <Body style={main}>
           <Container style={container}>
             <Img
-              src={neatNgoLogo}
+                src={"https://www.neatngo.com/assets/ngoplaceholder.png"}
               width="80"
               height="80"
               alt="Logo"

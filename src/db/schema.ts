@@ -278,6 +278,24 @@ export const grantTransactions = pgTable("grant_transactions", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const guests = pgTable("guests", {
+  id: text("id").$defaultFn(() => createId()).primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").unique(),
+  phoneNumber: text("phone_number"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const guestEventRegistrations = pgTable("guest_event_registrations", {
+  id: text("id").$defaultFn(() => createId()).primaryKey(),
+  guestId: text("guest_id").notNull().references(() => guests.id, { onDelete: "cascade" }),
+  eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  registrationDate: timestamp("registration_date").defaultNow().notNull(),
+  attended: boolean("attended").default(false),
+  notes: text("notes"),
+});
+
 // = = = = = = = = = = = = = = = = = = Relations = = = = = = = = = = = = = = = = = =
 export const usersRelations = relations(users, ({ many }) => ({
   memberships: many(memberships),
@@ -323,6 +341,7 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
     references: [organizations.id],
   }),
   registrations: many(eventRegistrations),
+  guestRegistrations: many(guestEventRegistrations),
 }));
 
 export const eventRegistrationsRelations = relations(
@@ -386,6 +405,21 @@ export const grantTransactionsRelations = relations(grantTransactions, ({ one })
   }),
 }));
 
+export const guestsRelations = relations(guests, ({ many }) => ({
+    eventRegistrations: many(guestEventRegistrations),
+  }));
+
+  export const guestEventRegistrationsRelations = relations(guestEventRegistrations, ({ one }) => ({
+  guest: one(guests, {
+    fields: [guestEventRegistrations.guestId],
+    references: [guests.id],
+  }),
+  event: one(events, {
+    fields: [guestEventRegistrations.eventId],
+    references: [events.id],
+  }),
+}));
+
 export type SelectEvent = typeof events.$inferSelect;
 export type SelectMemberships = typeof memberships.$inferSelect;
 
@@ -422,3 +456,11 @@ export type SelectTransactions = typeof grantTransactions.$inferSelect;
 export type InsertTransactions = typeof grantTransactions.$inferInsert;
 
 export type SelectGrantAllocation = typeof grantAllocations.$inferSelect;
+
+export type SelectGuest = typeof guests.$inferSelect;
+
+export type InsertGuest = typeof guests.$inferInsert;
+
+export type SelectGuestEventRegistration = typeof guestEventRegistrations.$inferSelect;
+
+export type InsertGuestEventRegistration = typeof guestEventRegistrations.$inferInsert;

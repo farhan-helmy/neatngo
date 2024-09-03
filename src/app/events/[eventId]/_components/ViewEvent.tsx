@@ -149,7 +149,7 @@ export default function ViewEvent({
                               className="border-2 border-background"
                             >
                               <AvatarImage
-                                src={`https://api.dicebear.com/6.x/bottts-neutral/svg?seed=${attendee.user.subscriptionTier}`}
+                                src={`https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${attendee.user.subscriptionTier}`}
                                 alt="userpic"
                               />
                               {/* <AvatarFallback>N</AvatarFallback> */}
