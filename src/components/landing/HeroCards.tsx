@@ -10,6 +10,7 @@ export const HeroCards = () => {
         layout="responsive"
         className="rounded-md"
         alt={"gif"}
+        unoptimized
       />
     </div>
   );

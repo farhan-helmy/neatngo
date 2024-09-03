@@ -13,6 +13,14 @@ import { Toaster } from "@/components/ui/sonner";
 import { UserButton } from "@clerk/nextjs";
 import { ToggleTheme } from "@/components/layout/toggle-theme";
 import { Button } from "@/components/ui/button";
+import type { Step } from 'react-joyride';
+import dynamic from 'next/dynamic'
+
+
+const JoyRideNoSSR = dynamic(
+  () => import('react-joyride'),
+  { ssr: false }
+)
 
 interface DashboardNavProps {
   items: NavItem[];
@@ -29,7 +37,7 @@ const navItems: NavItem[] = [
   {
     title: "Organization",
     href: "/dashboard/organization",
-    icon: "employee",
+    icon: "moon",
     label: "organization",
   },
 ];
@@ -176,6 +184,27 @@ function MobileSidebar() {
 }
 
 function Header() {
+  const [runTour, setRunTour] = useState(false);
+  const pathName = usePathname();
+  const steps: Step[] = [
+    {
+      target: '.add-organization-button',
+      content: 'Click here to create a new organization',
+      disableBeacon: true,
+    },
+    {
+      target: '.view-organization',
+      content: 'Click here to view your organization',
+      disableBeacon: true,
+    },
+  ];
+
+  const handleStartTour = () => {
+    setRunTour(true);
+  };
+
+  console.log(pathName);
+
   return (
     <div className="fixed top-0 left-0 right-0 supports-backdrop-blur:bg-background/60 border-b bg-background/95 backdrop-blur z-20">
       <nav className="h-14 flex items-center justify-between px-4">
@@ -193,6 +222,33 @@ function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <div className="relative">
+            {pathName === "/dashboard/organization" ? (
+              <>
+               <Button onClick={handleStartTour} variant={"link"}>
+                Start Tour
+              </Button>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+              </>
+             
+            ) : null}
+
+
+          </div>
+          <div>
+            <JoyRideNoSSR
+              steps={steps}
+              run={runTour}
+              continuous={true}
+              showSkipButton={true}
+              callback={({ status }) => {
+                if (['finished', 'skipped'].includes(status)) {
+                  setRunTour(false);
+                }
+              }}
+            />
+          </div>
+
           <ToggleTheme />
           {process.env.NEXT_PUBLIC_ENVIRONMENT === "dev" && (
             <Link href="/">

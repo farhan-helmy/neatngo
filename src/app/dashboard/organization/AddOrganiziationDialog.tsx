@@ -26,7 +26,8 @@ import {
 import { addOrganization } from "./actions";
 import { toast } from "sonner";
 import { useLoading } from "@/hooks/useLoading";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 
 const formSchema = z.object({
   organizationName: z
@@ -45,6 +46,7 @@ const formSchema = z.object({
 export function AddOrganizationDialog() {
   const { isLoading, withLoading } = useLoading();
   const [open, setOpen] = useState(false);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,40 +67,47 @@ export function AddOrganizationDialog() {
       setOpen(false);
     }
   });
+
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <PlusCircleIcon className="w-6 h-6 mr-2" />
-          Organization
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add Organization</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="organizationName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Example NGO" {...field} />
-                  </FormControl>
-                  <FormDescription>This is your NGO name.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button>{isLoading ? "Loading.." : "Submit"}</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <div className="add-organization-button">
+            <Button>
+              <PlusCircleIcon className="w-6 h-6 mr-2" />
+              Organization
+            </Button>
+          </div>
+
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Organization</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="organizationName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Organization Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Example NGO" {...field} />
+                    </FormControl>
+                    <FormDescription>This is your NGO name.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button>{isLoading ? "Loading.." : "Submit"}</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

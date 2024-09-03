@@ -17,6 +17,14 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import type { Step } from 'react-joyride';
+import dynamic from 'next/dynamic';
+
+const JoyRideNoSSR = dynamic(
+  () => import('react-joyride'),
+  { ssr: false }
+);
 
 export function OrganizationList({
   id,
@@ -27,6 +35,8 @@ export function OrganizationList({
   name: string;
   isPublic: boolean;
 }) {
+  
+
   return (
     <div
       key={id}
@@ -44,12 +54,14 @@ export function OrganizationList({
           {name}
         </div>
         <div className="relative ml-auto flex gap-2">
-          <Link
-            className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200"
+          <div className="view-organization">
+            <Link
+            className={`-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200`}
             href={`/dashboard/organization/${id}`}
           >
-            <EyeIcon className="h-4 w-4" aria-hidden="true" />
-          </Link>
+              <EyeIcon className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
 
           <Dialog>
             <DialogTrigger asChild>
