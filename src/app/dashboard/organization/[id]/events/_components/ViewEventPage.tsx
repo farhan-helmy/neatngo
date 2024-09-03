@@ -6,13 +6,14 @@ import SafeHTML from "@/components/safe-html";
 import { CardHeader, CardContent, Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { cleanEventType } from "@/helper";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, UserCircle, Calendar, Users, Clock } from "lucide-react";
+import { ChevronLeft, UserCircle, Calendar, Users, Clock, Share2, Facebook, Twitter, Link as LinkIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { EventType } from "@/db/schema";
 import { ViewAllParticipantDialog } from "./ViewAllParticipantDialog";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface Participant {
     id: string;
@@ -48,6 +49,25 @@ interface ViewEventPageProps {
 }
 
 export function ViewEventPage({ event, attendees, participants, organizationId }: ViewEventPageProps) {
+    const shareUrl = `https://demo.neatngo.com/events/${event.id}`;
+
+    const shareToFacebook = () => {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    };
+
+    const shareToTwitter = () => {
+        const text = `Check out this event: ${event.name}`;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+    };
+
+    const copyLink = () => {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            toast.success("Link copied to clipboard!");
+        }, (err) => {
+            console.error('Could not copy text: ', err);
+        });
+    };
+
     return (
         <Layout>
             <LayoutHeader className="flex justify-between items-center">
@@ -151,7 +171,7 @@ export function ViewEventPage({ event, attendees, participants, organizationId }
                         </div>
 
                         <div>
-                            <Card>
+                            <Card className="mb-8">
                                 <CardHeader>
                                     <CardTitle className="text-2xl">Event Information</CardTitle>
                                 </CardHeader>
@@ -189,6 +209,25 @@ export function ViewEventPage({ event, attendees, participants, organizationId }
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-2xl">Share Event</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex justify-around">
+                                        <Button onClick={shareToFacebook} variant="outline" size="icon">
+                                            <Facebook className="h-5 w-5" />
+                                        </Button>
+                                        <Button onClick={shareToTwitter} variant="outline" size="icon">
+                                            <Twitter className="h-5 w-5" />
+                                        </Button>
+                                        <Button onClick={copyLink} variant="outline" size="icon">
+                                            <LinkIcon className="h-5 w-5" />
+                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>
