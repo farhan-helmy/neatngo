@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { eventRegistrations, events } from "@/db/schema";
+import { eventRegistrations, events, guestEventRegistrations } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 import { Layout } from "@/components/custom/layout";
@@ -31,16 +31,37 @@ export default async function ViewEventPageWrapper({
     },
   });
 
-  const attendeesForProps = attendees.map(attendee => ({
-    ...attendee,
-    registrationDate: attendee.registrationDate.toISOString(),
-    attended: attendee.attended ?? false, // Ensure attended is always boolean
-  }));
+  const guestAttendees = await db.query.guestEventRegistrations.findMany({
+    where: eq(guestEventRegistrations.eventId, params.eventId),
+    with: {
+      guest: true,
+    }
+  });
 
-  const participants = attendees.map(attendee => ({
-    id: attendee.userId,
+  const allAttendees = [
+    ...attendees.map(attendee => ({
+      ...attendee,
+      id: attendee.userId,
+      registrationDate: attendee.registrationDate.toISOString(),
+      attended: attendee.attended ?? false,
+      isGuest: false,
+    })),
+    ...guestAttendees.map(guest => ({
+      ...guest,
+      id: guest.guestId,
+      registrationDate: guest.registrationDate.toISOString(),
+      attended: guest.attended ?? false,
+      isGuest: true,
+      user: { email: guest.guest.email, firstName: guest.guest.name },
+    })),
+  ];
+
+  const participants = allAttendees.map(attendee => ({
+    id: attendee.id,
     email: attendee.user.email,
-    attended: attendee.attended ?? false
+    firstName: attendee.user.firstName,
+    attended: attendee.attended,
+    isGuest: attendee.isGuest,
   }));
 
   const eventForProps = {
@@ -54,7 +75,7 @@ export default async function ViewEventPageWrapper({
       <UpdateEventSheet event={event} open={searchParams.action === "edit"} isServer={true} />
       <ViewEventPage
         event={eventForProps}
-        attendees={attendeesForProps}
+        attendees={allAttendees}
         participants={participants}
         organizationId={params.id}
       />

@@ -261,6 +261,7 @@ export const grants = pgTable("grants", {
 export const grantAllocations = pgTable("grant_allocations", {
   id: text("id").$defaultFn(() => createId()).primaryKey(),
   grantId: text("grant_id").notNull().references(() => grants.id, { onDelete: "cascade" }),
+  parentAllocationId: text("parent_allocation_id"),
   name: text("name").notNull(),
   amount: integer("amount").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -391,6 +392,12 @@ export const grantAllocationsRelations = relations(grantAllocations, ({ one, man
     fields: [grantAllocations.grantId],
     references: [grants.id],
   }),
+  parentAllocation: one(grantAllocations, {
+    fields: [grantAllocations.parentAllocationId],
+    references: [grantAllocations.id],
+    relationName: "subAllocations",
+  }),
+  subAllocations: many(grantAllocations, { relationName: "subAllocations" }),
   transactions: many(grantTransactions),
 }));
 
