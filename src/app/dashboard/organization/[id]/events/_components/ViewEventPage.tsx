@@ -17,18 +17,21 @@ import { toast } from "sonner";
 
 interface Participant {
     id: string;
-    email: string;
+    email: string | null;
     attended: boolean;
+    isGuest: boolean;
+    firstName: string | null;
 }
 
 interface Attendee {
     id: string;
     user: {
         firstName: string | null;
-        email: string;
+        email: string | null;
     };
     registrationDate: string;
     attended: boolean;
+    isGuest: boolean;
 }
 
 interface Event {
@@ -49,7 +52,7 @@ interface ViewEventPageProps {
 }
 
 export function ViewEventPage({ event, attendees, participants, organizationId }: ViewEventPageProps) {
-    const shareUrl = `https://demo.neatngo.com/events/${event.id}`;
+    const shareUrl = `https://${process.env.NEXT_PUBLIC_ENVIRONMENT === "dev" ? "demo." : ""}neatngo.com/events/${event.id}`;
 
     const shareToFacebook = () => {
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
@@ -137,7 +140,7 @@ export function ViewEventPage({ event, attendees, participants, organizationId }
                                                         <UserCircle className="h-12 w-12 text-primary" />
                                                         <div>
                                                             <div className="font-semibold">
-                                                                {attendee.user.firstName || "Unnamed Participant"}
+                                                                {attendee.isGuest ? "Guest" : (attendee.user.firstName || "Unnamed Participant")}
                                                             </div>
                                                             <div className="text-sm text-muted-foreground">
                                                                 {attendee.user.email}

@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { eventRegistrations, events } from "@/db/schema";
+import { eventRegistrations, events, guestEventRegistrations } from "@/db/schema";
 import { handleApiRequest } from "@/helper";
 import { and, eq } from "drizzle-orm";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
@@ -39,7 +39,11 @@ export async function getEvent({ eventId }: { eventId: string }) {
         },
       });
 
-      return { event, registrations };
+      const guestRegistrations = await tx.query.guestEventRegistrations.findMany({
+        where: eq(guestEventRegistrations.eventId, eventId),
+      });
+
+      return { event, registrations, guestRegistrations };
     });
     return eventData;
   });

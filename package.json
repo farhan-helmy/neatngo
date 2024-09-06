@@ -89,6 +89,7 @@
     "nextjs-toploader": "^1.6.12",
     "oslo": "^1.2.1",
     "postgres": "^3.4.4",
+    "qrcode.react": "^4.0.1",
     "react-day-picker": "8.10.1",
     "react-email": "3.0.1",
     "react-hook-form": "^7.52.2",

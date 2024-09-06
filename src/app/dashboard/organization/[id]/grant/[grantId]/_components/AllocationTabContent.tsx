@@ -3,9 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus, Edit, Trash } from "lucide-react"
+import { Plus, Edit, Trash, GitBranch } from "lucide-react"
 import { AllocationChart } from "./AllocationChart"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { SelectGrantAllocation } from "@/db/schema"
 import { allocateGrant } from "../../_lib/actions"
@@ -14,6 +14,7 @@ import { useState } from "react"
 import { useParams } from "next/navigation"
 import { toast } from "sonner"
 import { useLoading } from "@/hooks/useLoading"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 function AddAllocationDialog() {
     const [category, setCategory] = useState("")
@@ -196,7 +197,114 @@ function DeleteAllocationDialog({ allocation }: { allocation: SelectGrantAllocat
     )
 }
 
+
+function CreateSubAllocationDialog({ allocationId, name }: { allocationId: string, name: string }) {
+    const [category, setCategory] = useState("")
+    const [amount, setAmount] = useState<number | null>(null)
+    const [open, setOpen] = useState(false)
+    const params = useParams<{ id: string, grantId: string }>()
+
+    const { isLoading, withLoading } = useLoading()
+
+    const handleCreateSubAllocation = withLoading(async () => {
+        const res = await allocateGrant({
+            parentAllocationId: allocationId,
+            name: category,
+            amount: amount ?? 0,
+            grantId: params.grantId
+        })
+
+        if (res.error) {
+            toast.error(res.error)
+            return
+        }
+
+        toast.success(`Sub-allocation created successfully`)
+        setOpen(false)
+    })
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <DialogTrigger asChild>
+
+                            <Button variant="ghost">
+                                <GitBranch className="h-4 w-4" />
+                            </Button>
+
+                        </DialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Create Sub-Allocation</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Create Sub-Allocation for {name}</DialogTitle>
+                    <DialogDescription>Enter the details of the new sub-allocation below.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+
+                    <div>
+                        <Label htmlFor="category" className="text-right">Category</Label>
+                        <Input
+                            id="category"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                        />
+
+                    </div>
+
+                    <div>
+                        <Label htmlFor="amount" className="text-right">Amount</Label>
+                        <Input
+                            id="amount"
+                            type="number"
+                            value={amount ?? ""}
+                            onChange={(e) => setAmount(Number(e.target.value))}
+                        />
+                    </div>
+
+
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleCreateSubAllocation}>{isLoading ? "Allocating Sub..." : "Sub Allocate"}</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
 export function AllocationTabContent({ allocation }: { allocation: SelectGrantAllocation[] }) {
+    const renderAllocationRow = (alloc: SelectGrantAllocation, level: number = 0): React.ReactNode => (
+        <>
+            <TableRow key={alloc.id}>
+                <TableCell>
+                    <div style={{ paddingLeft: `${level * 20}px` }}>
+                        {level > 0 && <span className="text-muted-foreground mr-2">└─</span>}
+                        {alloc.name}
+                    </div>
+                </TableCell>
+                <TableCell className="text-right">{alloc.amount.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}</TableCell>
+                <TableCell className="text-right">
+                    <EditAllocationDialog allocation={alloc} />
+                    <CreateSubAllocationDialog allocationId={alloc.id} name={alloc.name} />
+                    <DeleteAllocationDialog allocation={alloc} />
+                </TableCell>
+            </TableRow>
+            {allocation
+                .filter(subAlloc => subAlloc.parentAllocationId === alloc.id)
+                .map(subAlloc => renderAllocationRow(subAlloc, level + 1))
+            }
+        </>
+    );
+
+    const topLevelAllocations = allocation.filter(alloc => !alloc.parentAllocationId);
+    const totalAllocation = allocation.reduce((sum, alloc) => sum + alloc.amount, 0);
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -210,7 +318,7 @@ export function AllocationTabContent({ allocation }: { allocation: SelectGrantAl
                 {allocation.length > 0 ? (
                     <>
                         <AllocationChart allocation={allocation} />
-                        <ScrollArea className="max-h-[200px] h-[200px] rounded-md border">
+                        <ScrollArea className="max-h-[400px] rounded-md border">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -220,17 +328,17 @@ export function AllocationTabContent({ allocation }: { allocation: SelectGrantAl
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {allocation.map((alloc) => (
-                                        <TableRow key={alloc.id}>
-                                            <TableCell>{alloc.name}</TableCell>
-                                            <TableCell className="text-right">{alloc.amount.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}</TableCell>
-                                            <TableCell className="text-right">
-                                                <EditAllocationDialog allocation={alloc} />
-                                                <DeleteAllocationDialog allocation={alloc} />
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {topLevelAllocations.map(alloc => renderAllocationRow(alloc))}
                                 </TableBody>
+                                <TableFooter>
+                                    <TableRow>
+                                        <TableCell className="font-bold">Total</TableCell>
+                                        <TableCell className="text-right font-bold">
+                                            {totalAllocation.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}
+                                        </TableCell>
+                                        <TableCell />
+                                    </TableRow>
+                                </TableFooter>
                             </Table>
                         </ScrollArea>
                     </>

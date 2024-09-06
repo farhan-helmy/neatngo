@@ -71,6 +71,9 @@ export default function ViewEvent({
     return <div className="text-center pt-24">Event does not exist</div>;
   }
 
+  const allRegistrations = [...event.registrations, ...event.guestRegistrations];
+  const totalRegistrations = allRegistrations.length;
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Main Content */}
@@ -134,38 +137,38 @@ export default function ViewEvent({
               <div className="bg-muted p-6 rounded-lg">
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-2">Attendees</h3>
-                  {event.registrations.length === 0 ? (
+                  {totalRegistrations === 0 ? (
                     <p className="text-muted-foreground">
                       Be the first to RSVP!
                     </p>
                   ) : (
                     <div className="flex items-center">
                       <div className="flex -space-x-2 mr-2">
-                        {event.registrations
-                          .slice(0, Math.min(event.registrations.length, 5))
-                          .map((attendee, index) => (
+                        {allRegistrations
+                          .slice(0, Math.min(totalRegistrations, 5))
+                          .map((registration, index) => (
                             <Avatar
                               key={index}
                               className="border-2 border-background"
                             >
                               <AvatarImage
-                                src={`https://api.dicebear.com/6.x/bottts-neutral/svg?seed=${attendee.user.subscriptionTier}`}
+                                src={`https://api.dicebear.com/9.x/notionists-neutral/svg?seed=${registration.id || 'guest'}`}
                                 alt="userpic"
                               />
                               {/* <AvatarFallback>N</AvatarFallback> */}
                             </Avatar>
                           ))}
                       </div>
-                      {event.registrations.length > 5 && (
+                      {totalRegistrations > 5 && (
                         <span className="bg-primary text-primary-foreground rounded-full px-2 py-1 text-sm font-semibold">
-                          +{event.registrations.length - 5}
+                          +{totalRegistrations - 5}
                         </span>
                       )}
                     </div>
                   )}
                   <p className="mt-2 text-sm text-muted-foreground">
-                    {event.registrations.length}{" "}
-                    {event.registrations.length === 1 ? "person" : "people"}{" "}
+                    {totalRegistrations}{" "}
+                    {totalRegistrations === 1 ? "person" : "people"}{" "}
                     attending
                   </p>
                 </div>

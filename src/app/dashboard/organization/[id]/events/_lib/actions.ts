@@ -5,6 +5,7 @@ import {
   eventRegistrations,
   events,
   eventTypeEnum,
+  guestEventRegistrations,
   organizations,
   SelectEvent,
   users,
@@ -348,22 +349,53 @@ export async function markAttendance({
   eventId,
   participantId,
   attended,
-  orgId
+  orgId,
+  isGuest,
 }: {
   eventId: string;
   participantId: string;
   attended: boolean;
   orgId: string;
+  isGuest: boolean;
 }) {
   noStore();
   return handleApiRequest(async () => {
+    console.log("data====>",eventId, participantId, attended, isGuest);
     const res = await db.transaction(async (tx) => {
-      await tx.update(eventRegistrations).set({
-        attended,
-      }).where(and(eq(eventRegistrations.eventId, eventId), eq(eventRegistrations.userId, participantId)));
+      if (isGuest) {
+        const updatedGuestRegistration = await tx.update(guestEventRegistrations).set({
+          attended,
+        })
+        .where(and(eq(guestEventRegistrations.eventId, eventId), eq(guestEventRegistrations.guestId, participantId)))
+        .returning({
+          id: guestEventRegistrations.id,
+          attended: guestEventRegistrations.attended,
+        });
+
+        if (!updatedGuestRegistration.length) {
+          throw new Error("Guest registration not found or update failed");
+        }
+
+        return updatedGuestRegistration[0];
+      } else {
+        const updatedRegistration = await tx.update(eventRegistrations).set({
+          attended,
+        })
+        .where(and(eq(eventRegistrations.eventId, eventId), eq(eventRegistrations.userId, participantId)))
+        .returning({
+          id: eventRegistrations.id,
+          attended: eventRegistrations.attended,
+        });
+
+        if (!updatedRegistration.length) {
+          throw new Error("Registration not found or update failed");
+        }
+
+        return updatedRegistration[0];
+      }
     });
 
-    console.log(participantId, attended, eventId);
+    console.log(participantId, attended, eventId, isGuest);
 
     revalidatePath(`/dashboard/organization/${orgId}/events/${eventId}`);
 

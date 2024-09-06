@@ -1,0 +1,1 @@
+ALTER TABLE "grant_allocations" ADD COLUMN "parent_allocation_id" text;

@@ -261,6 +261,7 @@ export const grants = pgTable("grants", {
 export const grantAllocations = pgTable("grant_allocations", {
   id: text("id").$defaultFn(() => createId()).primaryKey(),
   grantId: text("grant_id").notNull().references(() => grants.id, { onDelete: "cascade" }),
+  parentAllocationId: text("parent_allocation_id"),
   name: text("name").notNull(),
   amount: integer("amount").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -276,6 +277,24 @@ export const grantTransactions = pgTable("grant_transactions", {
   transactionDate: timestamp("transaction_date").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const guests = pgTable("guests", {
+  id: text("id").$defaultFn(() => createId()).primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").unique(),
+  phoneNumber: text("phone_number"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const guestEventRegistrations = pgTable("guest_event_registrations", {
+  id: text("id").$defaultFn(() => createId()).primaryKey(),
+  guestId: text("guest_id").notNull().references(() => guests.id, { onDelete: "cascade" }),
+  eventId: text("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  registrationDate: timestamp("registration_date").defaultNow().notNull(),
+  attended: boolean("attended").default(false),
+  notes: text("notes"),
 });
 
 // = = = = = = = = = = = = = = = = = = Relations = = = = = = = = = = = = = = = = = =
@@ -323,6 +342,7 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
     references: [organizations.id],
   }),
   registrations: many(eventRegistrations),
+  guestRegistrations: many(guestEventRegistrations),
 }));
 
 export const eventRegistrationsRelations = relations(
@@ -372,6 +392,12 @@ export const grantAllocationsRelations = relations(grantAllocations, ({ one, man
     fields: [grantAllocations.grantId],
     references: [grants.id],
   }),
+  parentAllocation: one(grantAllocations, {
+    fields: [grantAllocations.parentAllocationId],
+    references: [grantAllocations.id],
+    relationName: "subAllocations",
+  }),
+  subAllocations: many(grantAllocations, { relationName: "subAllocations" }),
   transactions: many(grantTransactions),
 }));
 
@@ -383,6 +409,21 @@ export const grantTransactionsRelations = relations(grantTransactions, ({ one })
   allocation: one(grantAllocations, {
     fields: [grantTransactions.allocationId],
     references: [grantAllocations.id],
+  }),
+}));
+
+export const guestsRelations = relations(guests, ({ many }) => ({
+    eventRegistrations: many(guestEventRegistrations),
+  }));
+
+  export const guestEventRegistrationsRelations = relations(guestEventRegistrations, ({ one }) => ({
+  guest: one(guests, {
+    fields: [guestEventRegistrations.guestId],
+    references: [guests.id],
+  }),
+  event: one(events, {
+    fields: [guestEventRegistrations.eventId],
+    references: [events.id],
   }),
 }));
 
@@ -422,3 +463,11 @@ export type SelectTransactions = typeof grantTransactions.$inferSelect;
 export type InsertTransactions = typeof grantTransactions.$inferInsert;
 
 export type SelectGrantAllocation = typeof grantAllocations.$inferSelect;
+
+export type SelectGuest = typeof guests.$inferSelect;
+
+export type InsertGuest = typeof guests.$inferInsert;
+
+export type SelectGuestEventRegistration = typeof guestEventRegistrations.$inferSelect;
+
+export type InsertGuestEventRegistration = typeof guestEventRegistrations.$inferInsert;

@@ -114,7 +114,7 @@ function AddTransactionDialog({ allocations }: { allocations: SelectGrantAllocat
                             </SelectTrigger>
                             <SelectContent>
                                 {allocations.map(a => (
-                                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                                    <SelectItem key={a.id} value={a.id}>{a.name} ({a.amount.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })})</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

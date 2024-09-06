@@ -163,26 +163,47 @@ export async function deleteGrants({
 export async function allocateGrant(input: InsertGrantAllocation) {
     return handleApiRequest(async () => {
         const res = await db.transaction(async (tx) => {
+            if (input.parentAllocationId) {
+                const parentAllocation = await tx.query.grantAllocations.findFirst({
+                    where: eq(grantAllocations.id, input.parentAllocationId),
+                    columns: {
+                        amount: true
+                    }
+                });
 
-            const totalGrantAmout = await tx.query.grants.findFirst({
-                where: eq(grants.id, input.grantId),
-                columns: {
-                    totalAmount: true
+                if (parentAllocation && parentAllocation.amount < input.amount) {
+                    throw new Error("Sub-allocation amount is more than the parent allocation amount");
                 }
-            })
+            } else {
+                const totalGrantAmount = await tx.query.grants.findFirst({
+                    where: eq(grants.id, input.grantId),
+                    columns: {
+                        totalAmount: true
+                    }
+                });
 
-            if (totalGrantAmout && totalGrantAmout?.totalAmount < input.amount) {
-                throw new Error("Budget allocation is more than the grant amount")
+                const existingAllocations = await tx.query.grantAllocations.findMany({
+                    where: eq(grantAllocations.grantId, input.grantId),
+                    columns: {
+                        amount: true
+                    }
+                });
+
+                const totalExistingAllocation = existingAllocations.reduce((sum, allocation) => sum + allocation.amount, 0);
+
+                if (totalGrantAmount && (totalExistingAllocation + input.amount > totalGrantAmount.totalAmount)) {
+                    throw new Error("Total allocation (existing + new) exceeds the grant amount");
+                }
             }
 
             const allocate = await tx.insert(grantAllocations).values(input).returning({
-                id: grantAllocations.id
+                id: grantAllocations.id,
             });
-            return allocate
+            return allocate;
         });
 
         revalidatePath(`/dashboard/organization`);
 
-        return res
-    })
+        return res;
+    });
 }

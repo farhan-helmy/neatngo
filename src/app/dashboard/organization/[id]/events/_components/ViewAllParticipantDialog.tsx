@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Search } from "lucide-react";
 import { toast } from 'sonner';
 import { useParams } from 'next/navigation';
@@ -13,13 +13,14 @@ import { markAttendance } from '../_lib/actions';
 
 interface Participant {
     id: string;
-    email: string;
+    email: string | null;
     attended: boolean;
+    firstName: string | null;
+    isGuest: boolean;
 }
 
 interface ViewAllParticipantDialogProps {
     participants: Participant[];
-
 }
 
 export function ViewAllParticipantDialog({ participants }: ViewAllParticipantDialogProps) {
@@ -33,37 +34,40 @@ export function ViewAllParticipantDialog({ participants }: ViewAllParticipantDia
         setSearchTerm(term);
         setFilteredParticipants(
             participants.filter((participant) =>
-                participant.email.toLowerCase().includes(term)
+                participant.email?.toLowerCase().includes(term) ||
+                participant.firstName?.toLowerCase().includes(term)
             )
         );
     };
-
 
     useEffect(() => {
         setFilteredParticipants(participants);
     }, [participants]);
 
-    const handleAttendanceChange = async (participantId: string, attended: boolean) => {
-        try {
-            await markAttendance({
-                eventId: eventId as string,
-                participantId: participantId,
-                attended: attended,
-                orgId: id as string,
-            });
+    const handleAttendanceChange = async (participantId: string, attended: boolean, isGuest: boolean) => {
 
-            setFilteredParticipants(prevParticipants =>
-                prevParticipants.map(participant =>
-                    participant.id === participantId
-                        ? { ...participant, attended }
-                        : participant
-                )
-            );
+        const res = await markAttendance({
+            eventId: eventId as string,
+            participantId: participantId,
+            attended: attended,
+            orgId: id as string,
+            isGuest: isGuest,
+        });
 
-            toast.success("Attendance updated");
-        } catch (error) {
-            toast.error("Failed to update attendance");
+        if (res.error) {
+            toast.error(res.error);
+            return 
         }
+
+        setFilteredParticipants(prevParticipants =>
+            prevParticipants.map(participant =>
+                participant.id === participantId
+                    ? { ...participant, attended }
+                    : participant
+            )
+        );
+
+        toast.success("Attendance updated");
     };
 
     return (
@@ -78,7 +82,7 @@ export function ViewAllParticipantDialog({ participants }: ViewAllParticipantDia
                 <div className="flex items-center space-x-2 mb-4">
                     <Search className="w-4 h-4 text-gray-500" />
                     <Input
-                        placeholder="Search by email"
+                        placeholder="Search by email or name"
                         value={searchTerm}
                         onChange={handleSearch}
                         className="flex-grow"
@@ -89,6 +93,7 @@ export function ViewAllParticipantDialog({ participants }: ViewAllParticipantDia
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Email</TableHead>
+                                <TableHead>Name</TableHead>
                                 <TableHead>Attended</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -96,10 +101,11 @@ export function ViewAllParticipantDialog({ participants }: ViewAllParticipantDia
                             {filteredParticipants.map((participant) => (
                                 <TableRow key={participant.id}>
                                     <TableCell>{participant.email}</TableCell>
+                                    <TableCell>{participant.firstName}</TableCell>
                                     <TableCell>
-                                        <Checkbox
+                                        <Switch
                                             checked={participant.attended}
-                                            onCheckedChange={(checked) => handleAttendanceChange(participant.id, checked as boolean)}
+                                            onCheckedChange={(checked) => handleAttendanceChange(participant.id, checked, participant.isGuest)}
                                         />
                                     </TableCell>
                                 </TableRow>
