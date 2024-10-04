@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { GeneralForm } from "./general";
+import { GeneralForm } from "./_components/general";
 import { getOrganization } from "../../_lib/actions";
 
 export default async function EditOrganizationPage({ params }: { params: { id: string } }) {
